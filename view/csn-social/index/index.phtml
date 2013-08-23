@@ -1,0 +1,25 @@
+<h1><a href="<?php echo $this->url('login'); ?>"><span style="color: #ADFF2F;"><?php echo $this->escapeHtml($user->getUsername()); ?>'s</span></a> Social Wall</h1>
+<a href="#">Manage your groups</a>
+<hr />
+<h4>You follow:</h4>
+<hr />
+<h4>They follow you:</h4>
+<hr />
+<div style="border: dashed 1px #ccc; border-radius: 15px;padding: 10px; width: 220px;">
+Add event:
+<?php
+$form = $this->form;
+$form->prepare();
+
+echo $this->form()->openTag($form);
+
+echo $this->formRow($form->get('event'));
+echo 'Share with:';
+echo $this->formRow($form->get('followers'));
+echo $this->formSubmit($form->get('submit'));
+echo $this->form()->closeTag();
+
+?>
+</div>
+<hr />
+<h4>Events: <span><a href="#">All</a> | <a href="#">My</a> | <a href="#">Group1</a> | <a href="#">Group2</a> | <a href="#">Group3</a></span></h4>

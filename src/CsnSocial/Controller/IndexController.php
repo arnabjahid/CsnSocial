@@ -16,9 +16,15 @@ class IndexController extends AbstractActionController
     
     public function indexAction()
     {
+    	// Uncomment these lines if don't use https://github.com/coolcsn/CsnAclNavigation
+		/*
 		if (!$user = $this->identity()) {
 			return $this->redirect()->toRoute('login', array('controller' => 'index', 'action' => 'login'));
 		}
+		*/
+		
+		$user = $this->identity();
+		
 		$form = new AddEventForm();
 		$request = $this->getRequest();
 		if ($request->isPost()) {
@@ -26,14 +32,23 @@ class IndexController extends AbstractActionController
 					$form->setData($request->getPost());
                     if ($form->isValid()) {
                         $data = $form->getData();
-                        $event = $data['event'];
+                        //$event = $data['event'];
 
-						//$user = $this->getEntityManager()->getRepository('CsnUser\Entity\User')->findOneBy(array('username' => $user->getUsername()));
+						//$user = $this->getEntityManager()->getRepository('CsnUser\Entity\User')->findOneBy(array('User' => $user->getId()));
+						//echo $user->getMyFriends();
+						$friends = $this->getEntityManager()->getRepository('CsnUser\Entity\User')->findBy(array('myFriends' => $user->getId()));
+						//echo $users->getMyFriends();
+						//foreach ($user->getMyFriends() AS $friend) {
+						//	echo $friend->getMyFriends() . "\n\n";
+						//}
+						//echo '<pre>';
+						//print_r($user);
+						//echo '</pre>';
 						//$user->setRegistrationToken(md5(uniqid(mt_rand(), true)));
 						//$this->flashMessenger()->addMessage($user->getEmail());
 						//$this->getEntityManager()->persist($user);
 						//$this->getEntityManager()->flush();
-						echo 'Post!';
+						echo 'Post!'.$user->getId();
                    }
             }
 		

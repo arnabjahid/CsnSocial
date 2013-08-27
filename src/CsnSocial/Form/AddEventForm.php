@@ -44,7 +44,7 @@ class AddEventForm extends Form
             'attributes' => array(
                 'type'  => 'submit',
                 'value' => 'Share',
-                'id' => 'submitbutton',
+                'class' => 'btn btn-success btn-large',
             ),
         )); 
     }

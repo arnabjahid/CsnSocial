@@ -1,11 +1,12 @@
 <h1><a href="<?php echo $this->url('login'); ?>"><span style="color: #ADFF2F;"><?php echo $this->escapeHtml($user->getUsername()); ?>'s</span></a> Social Wall</h1>
-<a href="#">Manage your groups</a>
+<a href="#" class="btn btn-success" style="float:right; position: relative;">Manage your groups</a>
+<div style="clear: both"></div>
 <hr />
 <h4>You follow:</h4>
 <hr />
 <h4>They follow you:</h4>
 <hr />
-<div style="border: dashed 1px #ccc; border-radius: 15px;padding: 10px; width: 220px;">
+<div class="hero-unit">
 Add event:
 <?php
 $form = $this->form;
@@ -22,4 +23,13 @@ echo $this->form()->closeTag();
 ?>
 </div>
 <hr />
-<h4>Events: <span><a href="#">All</a> | <a href="#">My</a> | <a href="#">Group1</a> | <a href="#">Group2</a> | <a href="#">Group3</a></span></h4>
+<h4 style="text-align:center">Events: <span><a href="#" class="btn btn-success">All</a> <a href="#" class="btn btn-success">My</a> <a href="#" class="btn btn-success">Group1</a> <a href="#" class="btn btn-success">Group2</a> <a href="#" class="btn btn-success">Group3</a></span></h4>
+<div class="hero-unit">
+<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left;">Event 1</div>
+<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left; margin-left: 55px;">Event 2</div>
+<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left; margin-top: 30px;">Event 3</div>
+<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left; margin-top: 30px; margin-left: 55px;">Event 4</div>
+<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left; margin-top: 30px;">Event 5</div>
+<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left; margin-top: 30px; margin-left: 55px;">Event 6</div>
+<div style="clear: both"></div>
+</div>

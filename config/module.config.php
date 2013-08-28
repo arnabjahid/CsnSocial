@@ -38,6 +38,9 @@ return array(
 		),
 	),
 	'view_manager' => array(
+		'template_map' => array(
+			//'csn-user/layout/nav-menu' => __DIR__ . '/../../../vendor/coolcsn/csnuser/view/csn-user/layout/nav-menu.phtml',
+		),
 		'template_path_stack' => array(
 			'csn-social' => __DIR__ . '/../view'
 		),

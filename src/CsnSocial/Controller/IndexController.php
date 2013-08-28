@@ -36,7 +36,7 @@ class IndexController extends AbstractActionController
 
 						//$user = $this->getEntityManager()->getRepository('CsnUser\Entity\User')->findOneBy(array('User' => $user->getId()));
 						//echo $user->getMyFriends();
-						$friends = $this->getEntityManager()->getRepository('CsnUser\Entity\User')->findBy(array('myFriends' => $user->getId()));
+						//$friends = $this->getEntityManager()->getRepository('CsnUser\Entity\User')->findBy(array('myFriends' => $user->getId()));
 						//echo $users->getMyFriends();
 						//foreach ($user->getMyFriends() AS $friend) {
 						//	echo $friend->getMyFriends() . "\n\n";

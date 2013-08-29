@@ -17,11 +17,11 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
     	// Uncomment these lines if don't use https://github.com/coolcsn/CsnAclNavigation
-		/*
+		///*
 		if (!$user = $this->identity()) {
 			return $this->redirect()->toRoute('login', array('controller' => 'index', 'action' => 'login'));
 		}
-		*/
+		//*/
 		
 		$user = $this->identity();
 		

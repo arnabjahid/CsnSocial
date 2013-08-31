@@ -16,12 +16,31 @@ Soon...
 Installation
 ------------
 
-Soon...
+1. For now you can just download the zip file from (https://github.com/coolcsn/CsnSocial), or you can clone it with following command:
+```
+git clone https://github.com/coolcsn/CsnSocial.git
+```
+Make sure you are in the directory "module" before clone!
+
+2. Add `CsnSocial` in your application configuration at: `./config/application.config.php`. An example configuration may look like the following :
+
+```
+'modules' => array(
+    'Application',
+    'DoctrineModule',
+	'DoctrineORMModule',
+	'CsnUser',
+	'CsnSocial',
+	'CsnCms',
+)
+```
+
+3. Install all dependencies listed below. (Don't forget to add the configurations)
+
 
 >### Post-installation ###
 Navigate to ***[hostname]/social*** in your browser to test it.
-
-Note: you must be logged in!
+Note: you must be logged in CsnUser!
 
 Dependencies
 ------------

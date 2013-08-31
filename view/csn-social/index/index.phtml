@@ -1,15 +1,23 @@
-<h1><a href="<?php echo $this->url('login'); ?>"><span class="zf-green"><?php echo $this->escapeHtml($user->getUsername()); ?>'s</span></a> Social Wall</h1>
-<a href="#" class="btn btn-success" style="float:right; position: relative;">Manage your groups</a>
+<h1 style="float: left">
+	<a href="<?php echo $this->url('editProfile'); ?>">
+		<span class="zf-green"><?php echo $this->escapeHtml($user->getDisplayName()); ?>'s</span>
+	</a> Social Wall
+</h1>
+<a href="#" class="btn btn-success" style="float:right; position: relative; margin-top: 20px;">Manage your groups</a>
 <div style="clear: both"></div>
+<hr />
+<h4>Мessages shelf: (here you'll see new messages) - NOT READY YET</h4> 
+<span style="color: #b30606">Message for deletion 1</span><a href="">[x]</a> | 
+<span style="color: #b30606">You have new follower!</span><a href="">[x]</a>
 <hr />
 <h4>You follow: (<a href="<?php echo $this->url('find-people');?>"><?php echo $this->translate('find more people to follow'); ?></a>)</h4>
 <?php 
 // BEGIN showing friends and following
 foreach ($this->myFriends as $myFriend) {
 	
-	echo $myFriend->getDisplayName();
+	echo '<span class="zf-green">'.$myFriend->getDisplayName(). '</span>';
 	echo '<a href="'.$this->url('delete-person/default', array('controller' => 'index', 'action'=>'delete-person', 'id' => $myFriend->getId())).'" 
-	onclick="return confirm(\'Stop following '.$myFriend->getDisplayName().'?\')"> [x]</a>';
+	onclick="return confirm(\'Stop following '.$myFriend->getDisplayName().'?\')">[x]</a>';
 	$myFriendsArray[] = $myFriend->getDisplayName(); // Create an array and fill it with the names of the current user's friends whitch will user later
 	echo ' | ';
 } 
@@ -19,10 +27,15 @@ if (!isset($myFriend)) {
 $myFriendsArray[] = $this->identity()->getDisplayName(); // Add to array current user DisplayName for displayng his articles
 ?>
 <hr />
-<h4>They follow you:</h4>
+<h4>They follow you: (they can see only your public events unless you add and categorize them)</h4>
 <?php 
 foreach ($this->friendsWithMe as $friendWithMe) {
-	echo $friendWithMe->getDisplayName();
+	echo '<span class="zf-green">'.$friendWithMe->getDisplayName(). '</span>';
+	if(!in_array($friendWithMe->getDisplayName(), $myFriendsArray)) {
+?>
+		<a href="<?php echo $this->url('add-person/default', array('controller' => 'index', 'action'=>'add-person', 'id' => $friendWithMe->getId()));?>" onclick="return confirm('Follow <?php echo $friendWithMe->getDisplayName(); ?> ?')">(+)</a>
+<?php
+	}
 	echo ' | ';
 } 
 if (!isset($friendWithMe)) {
@@ -38,14 +51,19 @@ $form = $this->form;
 $form->prepare();
 
 echo $this->form()->openTag($form);
-
+echo '<div style="position: relative;">';
+echo '<div style="position: relative; float: left; ">';
 echo $this->formRow($form->get('title'));
-echo '<br />Add event:<br />';
+echo '<br/>';
 echo $this->formRow($form->get('event'));
-echo '<br />Share with:<br />';
+echo '</div>';
+echo '<div style="position: relative; float: left; margin-left: 20px;">';
+echo 'Choose who can see it:<br />';
 echo $this->formRow($form->get('followers'));
-echo '<br />';
+echo '</div>';
+echo '<div style="clear: both"></div>';
 echo $this->formSubmit($form->get('submit'));
+echo '</div>';
 echo $this->form()->closeTag();
 // END showing the form
 ?>

@@ -46,6 +46,7 @@ class IndexController extends AbstractActionController
 						$this->prepareData($article, $data);
 		                $this->getEntityManager()->persist($article);
 		                $this->getEntityManager()->flush();
+		                return $this->redirect()->toRoute('social');
                    }
         }
         
@@ -108,11 +109,13 @@ class IndexController extends AbstractActionController
     
     public function addPersonAction()
     {
+    	$id = $this->params()->fromRoute('id');
+    
+    	$user = $this->identity();
 		$request = $this->getRequest();
 		$message = null;
 		if ($request->isPost()) {
 			$data = $request->getPost();
-			$user = $this->identity();
 			$adduser = $this->getEntityManager()->getRepository('CsnUser\Entity\User')->findOneBy(array('id' => $data['addPerson']));
 			foreach($user->getMyFriends() as $friend){
 				if($friend->getId() == $adduser->getId()){
@@ -122,17 +125,25 @@ class IndexController extends AbstractActionController
 				}
 			}
 			if($adduser->getId() == $user->getId()){
-					$message = $user->getDisplayName(). ', you can\'t add yourself to the list of your friends!';
+					$message = $user->getDisplayName(). ', you can\'t add yourself!';
 					$error = true;
 			}
 			if(!$error){
 				$user->addMyFriend($adduser);
 				$this->getEntityManager()->persist($user);
 				$this->getEntityManager()->flush();
-				$message = $adduser->getDisplayName().' successfully added to your friends list!';
+				$message = $adduser->getDisplayName().' successfully added to your list!';
 			}
 
-		}else{
+		}else if ($id) {
+            $adduser = $this->getEntityManager()->getRepository('CsnUser\Entity\User')->findOneBy(array('id' => $id));
+            $user->addMyFriend($adduser);
+			$this->getEntityManager()->persist($user);
+			$this->getEntityManager()->flush();
+			//$message = $adduser->getDisplayName().' successfully added to your list!';
+			$this->redirect()->toRoute('social', array('controller' => 'index', 'action' => 'index'));
+            
+        }else{
 			$this->redirect()->toRoute('social', array('controller' => 'index', 'action' => 'index'));
 		}
     	return new ViewModel(array('person' => $person, 'form' => $form, 'message' => $message));
@@ -143,7 +154,7 @@ class IndexController extends AbstractActionController
     	
     	$id = $this->params()->fromRoute('id');
         if (!$id) {
-            //return $this->redirect()->toRoute('social');
+            return $this->redirect()->toRoute('social');
         }
         
         $user = $this->identity();

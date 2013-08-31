@@ -20,6 +20,7 @@ class AddEventFilter extends InputFilter
 					'options' => array(
 						'encoding' => 'UTF-8',
 						'min'      => 1,
+						'max'      => 500,
 					),
 				),
 			), 

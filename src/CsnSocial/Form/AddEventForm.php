@@ -14,7 +14,8 @@ class AddEventForm extends Form
             'name' => 'title',
             'attributes' => array(
                 'type'  => 'text',
-                'placeholder' =>'Title',
+                'placeholder' =>'Title (optional)',
+                'size' => '50',
             ),
             'options' => array(
                 'label' => ' ',
@@ -24,7 +25,7 @@ class AddEventForm extends Form
             'name' => 'event',
             'attributes' => array(
                 'type'  => 'textarea',
-                'rows'  => '3',
+                'rows'  => '2',
                 'cols'  => '50',
                 'placeholder' =>'Tell to your followers what\'s happening...',
             ),
@@ -37,6 +38,7 @@ class AddEventForm extends Form
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'multiple' => 'multiple',
+                
                 'options' => array(
 		                '0' => 'All',
 		                '1' => 'group1',

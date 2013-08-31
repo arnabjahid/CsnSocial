@@ -73,7 +73,7 @@ return array(
 					'default' => array(
 						'type'    => 'Segment',
 						'options' => array(
-							'route'    => '/[...]',
+							'route'    => '[/:id]',
 							'defaults' => array(
 								'__NAMESPACE__' => 'CsnSocial\Controller',
 								'controller'    => 'Index',

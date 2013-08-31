@@ -33,6 +33,81 @@ return array(
 					),
 				),
 			),
+			'find-people' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/find-people',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Index',
+						'action'        => 'findPeople',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[...]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Index',
+								'action'        => 'findPeople',
+							),
+						),
+					),
+				),
+			),
+			'add-person' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/add-person',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Index',
+						'action'        => 'addPerson',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[...]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Index',
+								'action'        => 'addPerson',
+							),
+						),
+					),
+				),
+			),
+			'delete-person' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/delete-person',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Index',
+						'action'        => 'deletePerson',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[:id]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Index',
+								'action'        => 'deletePerson',
+							),
+						),
+					),
+				),
+			),
 		),
 	),
 	'view_manager' => array(

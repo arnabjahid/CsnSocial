@@ -30,8 +30,9 @@ This Module depends on the following Modules:
 
  - [Zend Framework 2](https://github.com/zendframework/zf2) 
 
- - [DoctrineORMModule] (https://github.com/doctrine/DoctrineORMModule) - DoctrineORMModule integrates Doctrine 2 ORM with Zend Framework 2 quickly and easily.
+ - [DoctrineORMModule](https://github.com/doctrine/DoctrineORMModule) - DoctrineORMModule integrates Doctrine 2 ORM with Zend Framework 2 quickly and easily.
  - [coolcsn/CsnUser](https://github.com/coolcsn/CsnUser) - Authentication (login, registration) module.
+ - [coolcsn/CsnCms](https://github.com/coolcsn/CsnCms) - Content management system.
 
 Recommends
 ----------

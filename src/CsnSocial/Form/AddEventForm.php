@@ -10,11 +10,21 @@ class AddEventForm extends Form
         parent::__construct('index');
         $this->setAttribute('method', 'post');
 		
+		$this->add(array(
+            'name' => 'title',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' =>'Title',
+            ),
+            'options' => array(
+                'label' => ' ',
+            ),
+        ));
         $this->add(array(
             'name' => 'event',
             'attributes' => array(
                 'type'  => 'textarea',
-                'rows'  => '4',
+                'rows'  => '3',
                 'cols'  => '50',
                 'placeholder' =>'Tell to your followers what\'s happening...',
             ),
@@ -38,13 +48,12 @@ class AddEventForm extends Form
                 'label' => ' ',
             ),
         )); 
-		
         $this->add(array(
             'name' => 'submit',
             'attributes' => array(
                 'type'  => 'submit',
                 'value' => 'Share',
-                'class' => 'btn btn-success btn-large',
+                'class' => 'btn btn-success btn-lg',
             ),
         )); 
     }

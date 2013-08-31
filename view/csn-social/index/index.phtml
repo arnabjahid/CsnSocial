@@ -1,36 +1,101 @@
-<h1><a href="<?php echo $this->url('login'); ?>"><span class="zf-green""><?php echo $this->escapeHtml($user->getUsername()); ?>'s</span></a> Social Wall</h1>
+<h1><a href="<?php echo $this->url('login'); ?>"><span class="zf-green"><?php echo $this->escapeHtml($user->getUsername()); ?>'s</span></a> Social Wall</h1>
 <a href="#" class="btn btn-success" style="float:right; position: relative;">Manage your groups</a>
 <div style="clear: both"></div>
 <hr />
-<h4>You follow:</h4>
+<h4>You follow: (<a href="<?php echo $this->url('find-people');?>"><?php echo $this->translate('find more people to follow'); ?></a>)</h4>
+<?php 
+// BEGIN showing friends and following
+foreach ($this->myFriends as $myFriend) {
+	
+	echo $myFriend->getDisplayName();
+	echo '<a href="'.$this->url('delete-person/default', array('controller' => 'index', 'action'=>'delete-person', 'id' => $myFriend->getId())).'" 
+	onclick="return confirm(\'Stop following '.$myFriend->getDisplayName().'?\')"> [x]</a>';
+	$myFriendsArray[] = $myFriend->getDisplayName(); // Create an array and fill it with the names of the current user's friends whitch will user later
+	echo ' | ';
+} 
+if (!isset($myFriend)) {
+	echo "<div style='font-size: 18px; color:#ccc;'>You don't follow nobody yet. Click the above link to find people.</div>";
+}
+$myFriendsArray[] = $this->identity()->getDisplayName(); // Add to array current user DisplayName for displayng his articles
+?>
 <hr />
 <h4>They follow you:</h4>
+<?php 
+foreach ($this->friendsWithMe as $friendWithMe) {
+	echo $friendWithMe->getDisplayName();
+	echo ' | ';
+} 
+if (!isset($friendWithMe)) {
+	echo "<div style='font-size: 18px; color:#ccc;'>Nobody follow you yet.</div>";
+}
+// END showing friends and following
+?>
 <hr />
 <div class="jumbotron">
-Add event:
 <?php
+// BEGIN showing the form
 $form = $this->form;
 $form->prepare();
 
 echo $this->form()->openTag($form);
 
+echo $this->formRow($form->get('title'));
+echo '<br />Add event:<br />';
 echo $this->formRow($form->get('event'));
 echo '<br />Share with:<br />';
 echo $this->formRow($form->get('followers'));
 echo '<br />';
 echo $this->formSubmit($form->get('submit'));
 echo $this->form()->closeTag();
-
+// END showing the form
 ?>
 </div>
 <hr />
 <h4 style="text-align:center">Events: <span><a href="#" class="btn btn-success">All</a> <a href="#" class="btn btn-success">My</a> <a href="#" class="btn btn-success">Group1</a> <a href="#" class="btn btn-success">Group2</a> <a href="#" class="btn btn-success">Group3</a></span></h4>
 <div class="jumbotron">
-<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left;">Event 1</div>
-<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left; margin-left: 55px;">Event 2</div>
-<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left; margin-top: 30px;">Event 3</div>
-<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left; margin-top: 30px; margin-left: 55px;">Event 4</div>
-<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left; margin-top: 30px;">Event 5</div>
-<div style="border: dashed 3px #ADFF2F; border-radius: 15px;padding: 10px; width: 470px; height: 200px; float: left; margin-top: 30px; margin-left: 55px;">Event 6</div>
-<div style="clear: both"></div>
+
+<?php 
+// BEGIN showing the articles
+foreach ($this->articles as $article) : ?>
+<?php if(is_object($article->getAuthor()) && in_array($article->getAuthor()->getDisplayName(), $myFriendsArray)){ //checking the display name in every iteration whether current article display name exist in the array with friends. If not exist current article isn't showing
+?>
+<div style="border: solid 2px #ADFF2F; border-radius: 15px;padding: 10px; width: auto; height: auto; background: #fff;">
+	<div style="font-weight: bold; font-size: 16px; float: left; margin-right: 10px;">
+		<?php if (is_object($article->getAuthor())) echo $this->escapeHtml($article->getAuthor()->getDisplayName());?> - 
+	</div>
+	<div class="zf-green" style=" font-size: 16px;">
+		<div style="float: left;">
+    	<?php echo $this->escapeHtml($article->getCreated()->format('Y-m-d H:i:s'));?>
+    	</div>
+    	<?php 
+    		if($article->getAuthor()->getUsername() === $this->identity()->getUsername()) { // only show next lines if this is the owner of the article
+    	?>
+    	<div style="float: right;">
+    	<a href="<?php echo $this->url('csn-cms/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
+            array('controller' => 'article', 'action'=>'edit', 'id' => $article->getId()));?>">Edit</a> | 
+        <a href="<?php echo $this->url('csn-cms/default', // SUPER IMPORTANT use csn-cms/<segment>
+            array('controller' => 'article', 'action'=>'delete', 'id' => $article->getId()));?>" onclick="return confirm('Do you really want to delete this record?')">Delete</a>
+        </div>
+        <?php } ?>
+	</div>
+	<div style="clear: both"></div>
+    <div style="font-weight: bold; color: #040">
+    	<?php echo $this->escapeHtml($article->getTitle());?>
+    </div>
+	<div style=" font-size: 18px; color: #555">
+    	<?php echo $article->getIntrotext();?>
+    </div>
+	<div class="zf-green" style=" font-size: 16px;">
+        <a href="<?php echo $this->url('csn-cms/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
+            array('controller' => 'comment', 'action'=>'index', 'id' => $article->getId()));?>">Add comment</a> |
+        <a href="<?php echo $this->url('csn-cms/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
+            array('controller' => 'article', 'action'=>'view', 'id' => $article->getId()));?>">View whole event</a>
+    </div>
+</div>
+<br />
+<?php } ?>
+<?php endforeach; 
+// END showing the articles
+?>
+
 </div>

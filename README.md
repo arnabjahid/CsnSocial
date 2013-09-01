@@ -23,7 +23,6 @@ git clone https://github.com/coolcsn/CsnSocial.git
 Make sure you are in the directory "module" before clone!
 
 2. Add `CsnSocial` in your application configuration at: `./config/application.config.php`. An example configuration may look like the following :
-
 ```
 'modules' => array(
     'Application',

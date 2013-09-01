@@ -23,7 +23,7 @@ class IndexController extends AbstractActionController
 	/**             
 	 * @var Intro text lenght
 	 */ 
-	protected $introTextLenght = 150;
+	protected $introTextLenght = 250;
     
     public function indexAction()
     {
@@ -225,7 +225,7 @@ class IndexController extends AbstractActionController
     public function prepareIntroText($event)
     {
 		//Remove the HTML tags
-		$event = strip_tags($event);
+		//$event = strip_tags($event);
 
 		// Convert HTML entities to single characters
 		$event = html_entity_decode($event, ENT_QUOTES, 'UTF-8');

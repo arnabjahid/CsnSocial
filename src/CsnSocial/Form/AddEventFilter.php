@@ -12,7 +12,7 @@ class AddEventFilter extends InputFilter
 			'name'     => 'event',
 			'required' => true,
 			'filters'  => array(
-				array('name' => 'StripTags'),
+				//array('name' => 'StripTags'),
 			),
 			'validators' => array(
 				array(
@@ -21,6 +21,22 @@ class AddEventFilter extends InputFilter
 						'encoding' => 'UTF-8',
 						'min'      => 1,
 						'max'      => 500,
+					),
+				),
+			), 
+		));	
+		$this->add(array(
+			'name'     => 'title',
+			'required' => false,
+			'filters'  => array(
+				array('name' => 'StripTags'),
+			),
+			'validators' => array(
+				array(
+					'name'    => 'StringLength',
+					'options' => array(
+						'encoding' => 'UTF-8',
+						'max'      => 150,
 					),
 				),
 			), 

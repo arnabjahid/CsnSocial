@@ -17,7 +17,7 @@ foreach ($this->myFriends as $myFriend) {
 	
 	echo '<span class="zf-green">'.$myFriend->getDisplayName(). '</span>';
 	echo '<a href="'.$this->url('delete-person/default', array('controller' => 'index', 'action'=>'delete-person', 'id' => $myFriend->getId())).'" 
-	onclick="return confirm(\'Stop following '.$myFriend->getDisplayName().'?\')">[x]</a>';
+	onclick="return confirm(\'Stop following '.$myFriend->getDisplayName().'?\')" title="Remove this person">[x]</a>';
 	$myFriendsArray[] = $myFriend->getDisplayName(); // Create an array and fill it with the names of the current user's friends whitch will user later
 	echo ' | ';
 } 
@@ -33,7 +33,7 @@ foreach ($this->friendsWithMe as $friendWithMe) {
 	echo '<span class="zf-green">'.$friendWithMe->getDisplayName(). '</span>';
 	if(!in_array($friendWithMe->getDisplayName(), $myFriendsArray)) {
 ?>
-		<a href="<?php echo $this->url('add-person/default', array('controller' => 'index', 'action'=>'add-person', 'id' => $friendWithMe->getId()));?>" onclick="return confirm('Follow <?php echo $friendWithMe->getDisplayName(); ?> ?')">(+)</a>
+		<a href="<?php echo $this->url('add-person/default', array('controller' => 'index', 'action'=>'add-person', 'id' => $friendWithMe->getId()));?>" onclick="return confirm('Follow <?php echo $friendWithMe->getDisplayName(); ?> ?')" title="Add this person">(+)</a>
 <?php
 	}
 	echo ' | ';
@@ -76,8 +76,16 @@ echo $this->form()->closeTag();
 // BEGIN showing the articles
 foreach ($this->articles as $article) : ?>
 <?php if(is_object($article->getAuthor()) && in_array($article->getAuthor()->getDisplayName(), $myFriendsArray)){ //checking the display name in every iteration whether current article display name exist in the array with friends. If not exist current article isn't showing
+
+/**
+*
+* NOTE: Here you can use jQuery Masonry plugin to arrange the boxes
+* http://masonry.desandro.com/
+*
+*/
 ?>
-<div style="border: solid 2px #ADFF2F; border-radius: 15px;padding: 10px; width: auto; height: auto; background: #fff;">
+
+<div style="border: solid 0px #ADFF2F; box-shadow: 0px 0px 5px rgba(125, 213, 66, 1); border-radius: 0px;padding: 10px; width: 485px; height: auto; background: #fff; float: left; margin-left: 15px; margin-top: 15px; " onMouseOver="this.style.boxShadow='0px 0px 5px rgba(0, 80, 133, 1)'" onMouseOut="this.style.boxShadow='0px 0px 5px rgba(125, 213, 66, 1)'">
 	<div style="font-weight: bold; font-size: 16px; float: left; margin-right: 10px;">
 		<?php if (is_object($article->getAuthor())) echo $this->escapeHtml($article->getAuthor()->getDisplayName());?> - 
 	</div>
@@ -110,10 +118,11 @@ foreach ($this->articles as $article) : ?>
             array('controller' => 'article', 'action'=>'view', 'id' => $article->getId()));?>">View whole event</a>
     </div>
 </div>
-<br />
+
+
 <?php } ?>
 <?php endforeach; 
 // END showing the articles
 ?>
-
+<div style="clear: both"></div>
 </div>

@@ -4,12 +4,12 @@ namespace CsnSocial\Form;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
 
-class AddEventFilter extends InputFilter
+class AddCommentFilter extends InputFilter
 {
 	public function __construct($sm)
 	{
         $this->add(array(
-			'name'     => 'event',
+			'name'     => 'text',
 			'required' => true,
 			'filters'  => array(
 				array('name' => 'StripTags',
@@ -26,6 +26,7 @@ class AddEventFilter extends InputFilter
 					'options' => array(
 						'encoding' => 'UTF-8',
 						'min'      => 1,
+						'max'      => 255,
 					),
 				),
 			), 

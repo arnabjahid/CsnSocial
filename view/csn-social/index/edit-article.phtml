@@ -1,0 +1,39 @@
+<a href="<?php echo $this->url('social'); ?>" class="btn btn-success"><?php echo $this->translate('Back to my wall'); ?></a>
+<hr />
+<div class="jumbotron">
+
+<?php
+if($message = $this->message){
+	echo $message;
+}
+?>
+<?php
+// BEGIN showing the form
+$form = $this->form;
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo '<div style="position: relative;">';
+echo '<div style="position: relative; float: left; ">';
+echo $this->formRow($form->get('title'));
+echo '<br/>';
+echo $this->formRow($form->get('event'));
+echo '</div>';
+echo '<div style="position: relative; float: left; margin-left: 20px;">';
+echo 'Choose who can see it:<br />';
+echo $this->formRow($form->get('followers'));
+echo '</div>';
+echo '<div style="clear: both"></div>';
+echo $this->formSubmit($form->get('submit'));
+echo '</div>';
+echo $this->form()->closeTag();
+// END showing the form
+
+if($message = $this->message){
+	echo '<div style="color: red">'.$message.'</div>';
+}
+?>
+
+
+</div>
+<a href="<?php echo $this->url('social'); ?>" class="btn btn-success"><?php echo $this->translate('Back to my wall'); ?></a>

@@ -1,0 +1,10 @@
+<hr />
+<div class="jumbotron">
+
+<?php
+if($message = $this->message){
+	echo $message;
+}
+?>
+</div>
+<a href="<?php echo $this->url('social'); ?>" class="btn btn-success"><?php echo $this->translate('Back to my wall'); ?></a>

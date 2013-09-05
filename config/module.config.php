@@ -108,6 +108,131 @@ return array(
 					),
 				),
 			),
+			'delete-article' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/delete-article',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Index',
+						'action'        => 'deleteArticle',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[:id]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Index',
+								'action'        => 'deleteArticle',
+							),
+						),
+					),
+				),
+			),
+			'view-article' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/view-article',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Index',
+						'action'        => 'viewArticle',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[:id][/:anchor]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Index',
+								'action'        => 'viewArticle',
+							),
+						),
+					),
+				),
+			),
+			'edit-article' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/edit-article',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Index',
+						'action'        => 'editArticle',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[:id]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Index',
+								'action'        => 'editArticle',
+							),
+						),
+					),
+				),
+			),
+			'delete-comment' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/delete-comment',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Index',
+						'action'        => 'deleteComment',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[:id]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Index',
+								'action'        => 'deleteComment',
+							),
+						),
+					),
+				),
+			),
+			'edit-comment' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/edit-comment',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Index',
+						'action'        => 'editComment',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[:article]/[:id]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Index',
+								'action'        => 'editComment',
+							),
+						),
+					),
+				),
+			),
 		),
 	),
 	'view_manager' => array(

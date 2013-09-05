@@ -4,7 +4,7 @@ namespace CsnSocial\Form;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
 
-class AddEventFilter extends InputFilter
+class EditEventFilter extends InputFilter
 {
 	public function __construct($sm)
 	{

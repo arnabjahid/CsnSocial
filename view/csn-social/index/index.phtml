@@ -97,10 +97,10 @@ foreach ($this->articles as $article) : ?>
     		if($article->getAuthor()->getUsername() === $this->identity()->getUsername()) { // only show next lines if this is the owner of the article
     	?>
     	<div style="float: right;">
-    	<a href="<?php echo $this->url('csn-cms/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
-            array('controller' => 'article', 'action'=>'edit', 'id' => $article->getId()));?>">Edit</a> | 
-        <a href="<?php echo $this->url('csn-cms/default', // SUPER IMPORTANT use csn-cms/<segment>
-            array('controller' => 'article', 'action'=>'delete', 'id' => $article->getId()));?>" onclick="return confirm('Do you really want to delete this record?')">Delete</a>
+    	<a href="<?php echo $this->url('edit-article/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
+            array('controller' => 'index', 'action'=>'edit-article', 'id' => $article->getId()));?>">Edit</a> | 
+        <a href="<?php echo $this->url('delete-article/default', // SUPER IMPORTANT use csn-cms/<segment>
+            array('controller' => 'index', 'action'=>'delete-article', 'id' => $article->getId()));?>" onclick="return confirm('Do you really want to delete this event?')">Delete</a>
         </div>
         <?php } ?>
 	</div>
@@ -108,14 +108,16 @@ foreach ($this->articles as $article) : ?>
     <div style="font-weight: bold; color: #040">
     	<?php echo $this->escapeHtml($article->getTitle());?>
     </div>
-	<div style=" font-size: 18px; color: #555">
+	<div style=" font-size: 18px; color: #555; word-wrap:break-word;">
     	<?php echo $article->getIntrotext();?>
     </div>
 	<div class="zf-green" style=" font-size: 16px;">
-        <a href="<?php echo $this->url('csn-cms/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
-            array('controller' => 'comment', 'action'=>'index', 'id' => $article->getId()));?>">Add comment</a> |
-        <a href="<?php echo $this->url('csn-cms/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
-            array('controller' => 'article', 'action'=>'view', 'id' => $article->getId()));?>">View whole event</a>
+        <a href="<?php echo $this->url('view-article/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
+            array('controller' => 'index', 'action'=>'view-article', 'id' => $article->getId())).'#comments';?>">view comments (
+            <?php echo count($article->getComments()); ?>
+            )</a> |
+        <a href="<?php echo $this->url('view-article/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
+            array('controller' => 'index', 'action'=>'view-article', 'id' => $article->getId()));?>">View entire event</a>
     </div>
 </div>
 

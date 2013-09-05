@@ -7,10 +7,17 @@ use Zend\View\Model\ViewModel;
 use CsnSocial\Form\AddEventForm;
 use CsnSocial\Form\AddEventFilter;
 
+use CsnSocial\Form\EditEventForm;
+use CsnSocial\Form\EditEventFilter;
+
+use CsnSocial\Form\AddCommentForm;
+use CsnSocial\Form\AddCommentFilter;
+
 use CsnSocial\Form\SearchFrom;
 use CsnSocial\Form\AddPersonForm;
 
 use CsnCms\Entity\Article;
+use CsnCms\Entity\Comment;
 use CsnUser\Entity\User;
 
 class IndexController extends AbstractActionController
@@ -43,7 +50,7 @@ class IndexController extends AbstractActionController
                     if ($form->isValid()) {
                         $data = $form->getData();
                         
-						$this->prepareData($article, $data);
+						$this->prepareData($article, $data, false);
 		                $this->getEntityManager()->persist($article);
 		                $this->getEntityManager()->flush();
 		                return $this->redirect()->toRoute('social');
@@ -52,9 +59,9 @@ class IndexController extends AbstractActionController
         
         $dqlArticles = "SELECT a, u, l, c FROM CsnCms\Entity\Article a LEFT JOIN a.author u LEFT JOIN a.language l LEFT JOIN a.categories c   ORDER BY a.created DESC"; 
         $query = $this->getEntityManager()->createQuery($dqlArticles);
-        $query->setMaxResults(30);
+        //$query->setMaxResults(30);
         $articles = $query->getResult();
-
+        
         $dqlMyFriends = "SELECT u, f FROM CsnUser\Entity\User u LEFT JOIN u.friendsWithMe f WHERE f.id = ".$user->getId(); 
 
         $query = $this->getEntityManager()->createQuery($dqlMyFriends);
@@ -149,6 +156,227 @@ class IndexController extends AbstractActionController
     	return new ViewModel(array('person' => $person, 'form' => $form, 'message' => $message));
     }
     
+    
+    public function viewArticleAction()
+    {
+    	$id = $this->params()->fromRoute('id');
+        if (!$id) {
+            return $this->redirect()->toRoute('social');
+        }
+        
+        $user = $this->identity();
+
+        try {
+            if($article = $this->getEntityManager()->getRepository('CsnCms\Entity\Article')->findOneBy(array('id' => $id))){
+            	$form = new AddCommentForm();
+				$request = $this->getRequest();
+				if ($request->isPost()) {
+							
+				            $form->setInputFilter(new AddCommentFilter($this->getServiceLocator()));
+							$form->setData($request->getPost());
+				            if ($form->isValid()) {
+				                $data = $form->getData();
+				                
+				                $comment = new Comment();
+				                $comment->setTitle($data['title']);
+								$comment->setText($data['text']);
+								$comment->setAuthor($user);
+								$comment->setArticle($article);
+    							$comment->setCreated(new \DateTime());
+    							
+								$this->getEntityManager()->persist($comment);
+								$this->getEntityManager()->flush();
+								return $this->redirect()->toRoute('view-article/default', array('controller' => 'index', 'action'=>'view-article', 'id' => $id));
+						   }
+				}
+			//}
+            	
+            	//$comments = new Comment();
+            	$comments = $this->getEntityManager()->getRepository('CsnCms\Entity\Comment')->findBy(array('article' => $id), array('created' => 'DESC'));
+            	
+            	return new ViewModel(array('article' => $article,'comments' => $comments, 'form' => $form, 'message' => $message));
+            }else{
+            	return $this->redirect()->toRoute('social');
+            }
+        }
+        catch (\Exception $ex) {
+            $message = $ex->getMessage(); // this will never be seen if you don't comment the redirect
+            //return $this->redirect()->toRoute('social'));
+        }
+    	return new ViewModel(array('article' => $article, 'message' => $message));
+    }
+    
+    public function editArticleAction()
+    {
+    	$id = $this->params()->fromRoute('id');
+        if (!$id) {
+            return $this->redirect()->toRoute('social');
+        }
+        
+        $user = $this->identity();
+        
+       
+        try {
+             if($article = $this->getEntityManager()->getRepository('CsnCms\Entity\Article')->findOneBy(array('id' => $id, 'author' => $user->getId()))){
+             //TODO: Edit action and Index action may use same form and filter
+				$form = new EditEventForm();
+				$data = array(
+					'title'    => $article->getTitle(),
+					'event'   => $article->getFullText(),
+				);
+				$form->setData($data);
+				$request = $this->getRequest();
+				if ($request->isPost()) {
+				            $form->setInputFilter(new EditEventFilter($this->getServiceLocator()));
+							$form->setData($request->getPost());
+				            if ($form->isValid()) {
+				                $data = $form->getData();
+				                
+				                
+								$this->prepareData($article, $data, true);
+						        $this->getEntityManager()->persist($article);
+						        $this->getEntityManager()->flush();
+						        //return $this->redirect()->toRoute('edit-article/default', array('controller' => 'index', 'action'=>'edit-article', 'id' => $id));
+						        $message = 'Update successful!';
+						        return new ViewModel(array('form' => $form, 'message' => $message));
+				           }
+				}
+             
+            	return new ViewModel(array('article' => $article, 'form' => $form));
+            }else{
+            	return $this->redirect()->toRoute('social');
+            }
+        }
+        catch (\Exception $ex) {
+            $message = $ex->getMessage(); // this will never be seen if you don't comment the redirect
+            //return $this->redirect()->toRoute('csn-cms/default', array('controller' => 'article', 'action' => 'index'));
+            return new ViewModel(array('message' => $message));
+        }
+
+    }
+    
+    public function deleteArticleAction()
+    {
+    	$id = $this->params()->fromRoute('id');
+        if (!$id) {
+            return $this->redirect()->toRoute('social');
+        }
+        
+        $user = $this->identity();
+        
+        try {
+        
+            if($article = $this->getEntityManager()->getRepository('CsnCms\Entity\Article')->findOneBy(array('id' => $id, 'author' => $user->getId()))){
+            	//Delete all comments first
+				if($comments = $this->getEntityManager()->getRepository('CsnCms\Entity\Comment')->findBy(array('article' => $id, ))){
+				  foreach($comments as $comment){
+				  	$this->getEntityManager()->remove($comment);
+		        	$this->getEntityManager()->flush();
+				  }
+				}
+				//Delete the article
+		        $this->getEntityManager()->remove($article);
+		        $this->getEntityManager()->flush();	
+		        return $this->redirect()->toRoute('social');
+            }else{
+            	return $this->redirect()->toRoute('social');
+            }
+        }
+        catch (\Exception $ex) {
+            $message = $ex->getMessage(); // this will never be seen if you don't comment the redirect
+            return $this->redirect()->toRoute('social');
+        }	
+        
+        
+        
+        return new ViewModel(array('person' => $person, 'form' => $form, 'message' => $message));
+    }
+    
+    public function deleteCommentAction()
+    {
+    	$id = $this->params()->fromRoute('id');
+        if (!$id) {
+            return $this->redirect()->toRoute('social');
+        }
+        
+        $user = $this->identity();
+        
+        try {
+        
+            if($comment = $this->getEntityManager()->getRepository('CsnCms\Entity\Comment')->findOneBy(array('id' => $id, 'author' => $user->getId()))){
+				
+		        $this->getEntityManager()->remove($comment);
+		        $this->getEntityManager()->flush();	
+		        return $this->redirect()->toRoute('view-article/default', array('controller' => 'index', 'action'=>'view-article', 'id' => $id));
+            }else{
+            	return $this->redirect()->toRoute('social');
+            }
+        }
+        catch (\Exception $ex) {
+            $message = $ex->getMessage(); // this will never be seen if you don't comment the redirect
+            return $this->redirect()->toRoute('social');
+        }	
+        
+        
+        
+        return new ViewModel(array('person' => $person, 'form' => $form, 'message' => $message));
+    }
+    
+    public function editCommentAction()
+    {
+    	
+    	$id = $this->params()->fromRoute('id');
+        if (!$id) {
+            return $this->redirect()->toRoute('social');
+        }
+        $article = $this->params()->fromRoute('article');
+        if (!$article) {
+            return $this->redirect()->toRoute('social');
+        }
+        
+        $user = $this->identity();
+        
+       
+        try {
+             if($comment = $this->getEntityManager()->getRepository('CsnCms\Entity\Comment')->findOneBy(array('id' => $id, 'author' => $user->getId()))){
+             //TODO: Edit action and Index action may use same form and filter
+				$form = new AddCommentForm();
+				$form->get('submit')->setValue('Update comment');
+				$data = array(
+					'title'    => $comment->getTitle(),
+					'text'   => $comment->getText(),
+				);
+				$form->setData($data);
+				$request = $this->getRequest();
+				if ($request->isPost()) {
+				            $form->setInputFilter(new AddCommentFilter($this->getServiceLocator()));
+							$form->setData($request->getPost());
+				            if ($form->isValid()) {
+				                $data = $form->getData();
+				                
+				                $comment->setTitle($data['title']);
+				                $comment->setText($data['text']);
+								//$this->prepareData($article, $data, true); // ???????
+						        $this->getEntityManager()->persist($comment);
+						        $this->getEntityManager()->flush();
+						        //return $this->redirect()->toRoute('edit-article/default', array('controller' => 'index', 'action'=>'edit-article', 'id' => $id));
+						        $message = 'Update successful!';
+						        return new ViewModel(array('form' => $form, 'message' => $message, 'id'=>$article));
+				           }
+				}
+             
+            	return new ViewModel(array('form' => $form, 'id'=>$article));
+            }else{
+            	return $this->redirect()->toRoute('social');
+            }
+        }
+        catch (\Exception $ex) {
+            $message = $ex->getMessage(); // this will never be seen if you don't comment the redirect
+            //return $this->redirect()->toRoute('csn-cms/default', array('controller' => 'article', 'action' => 'index'));
+            return new ViewModel(array('message' => $message, 'id'=>$article));
+        }
+    }
+    
     public function deletePersonAction()
     {
     	
@@ -184,11 +412,14 @@ class IndexController extends AbstractActionController
     }
 	
 	
-	public function prepareData($artcile, $data)
+	public function prepareData($artcile, $data, $update)
     {
-    	$artcile->setAuthor($this->identity());
+    	if(!$update){
+    		$artcile->setAuthor($this->identity());
+    		$artcile->setCreated(new \DateTime());
+    	}
         $artcile->setFulltext($data['event']);
-        $artcile->setCreated(new \DateTime());
+        
         $artcile->setTitle($data['title']);
         
         $slug = $this->prepareSlug($data['title']);
@@ -226,15 +457,33 @@ class IndexController extends AbstractActionController
     {
 		//Remove the HTML tags
 		//$event = strip_tags($event);
-
+		$original = $event;
 		// Convert HTML entities to single characters
 		$event = html_entity_decode($event, ENT_QUOTES, 'UTF-8');
+		
+		// Get first N characters
+		/*$firsNChars = substr($event, 0, $this->introTextLenght);
 
-		// Make the string the desired number of characters
-		$event = substr($event, 0, $this->introTextLenght);
+		//If exist close tag
+		if($videoCloseTagPos = strpos($firsNChars, "</iframe>")){
+			$videoOpenTagPos = strpos($firsNChars, "<iframe");
+			$videoWithOutText = $videoCloseTagPos - $videoOpenTagPos;
 
-		// Add an elipsis
-		$event .= "…";
+			// Make the string the desired number of characters
+			$event = substr($event, 0, ($this->introTextLenght+$videoWithOutText));
+			
+		// If not exist close tag
+		}elseif($videoOpenTagPos = strpos($firsNChars, "<iframe")){
+			$event = substr($original, 0, $videoOpenTagPos);
+		}else{
+			$event = substr($original, 0, ($this->introTextLenght));
+		}*/
+		
+		$event = substr($original, 0, $this->introTextLenght);
+		if(strlen($original) > $this->introTextLenght){
+			// Add an elipsis
+			$event .= "…";
+		}
 
         return $event;
     }

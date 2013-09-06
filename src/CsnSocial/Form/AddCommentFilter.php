@@ -14,8 +14,8 @@ class AddCommentFilter extends InputFilter
 			'filters'  => array(
 				array('name' => 'StripTags',
 					'options' => array(
-						'allowTags'		=> array('p', 'a', 'b', 'i', 'u','center', 'bdo', 'del', 'sup', 'sub', 'img', 'iframe'),
-						'allowAttribs'	=> array('href', 'dir', 'alt', 'src', 'width', 'height', 'frameborder', 'allowfullscreen', 'webkitallowfullscreen', 'mozallowfullscreen'),
+						'allowTags'		=> array('br', 'p', 'a', 'b', 'i', 'u','center', 'bdo', 'del', 'sup', 'sub', 'img', 'iframe'),
+						'allowAttribs'	=> array('href','target', 'dir', 'alt', 'src', 'width', 'height', 'frameborder', 'allowfullscreen', 'webkitallowfullscreen', 'mozallowfullscreen'),
 					)
 				),
 				

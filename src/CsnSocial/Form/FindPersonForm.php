@@ -3,7 +3,7 @@ namespace CsnSocial\Form;
 
 use Zend\Form\Form;
 
-class AddPersonForm extends Form
+class FindPersonForm extends Form
 {
     public function __construct($name = null)
     {
@@ -11,9 +11,14 @@ class AddPersonForm extends Form
         $this->setAttribute('method', 'post');
 		
 		$this->add(array(
-            'name' => 'addPerson',
+            'name' => 'search',
             'attributes' => array(
-                'type'  => 'hidden',
+                'type'  => 'text',
+                'placeholder' =>'Type person name...',
+                'size' => 20
+            ),
+            'options' => array(
+                'label' => ' ',
             ),
         ));
         
@@ -21,8 +26,8 @@ class AddPersonForm extends Form
             'name' => 'submit',
             'attributes' => array(
                 'type'  => 'submit',
-                'value' => 'Add this person',
-                'class' => 'btn btn-success',
+                'value' => 'Find',
+                'class' => 'btn btn-success btn-lg',
             ),
         )); 
     }

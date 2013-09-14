@@ -1,45 +1,70 @@
 <h1 style="float: left">
 	<a href="<?php echo $this->url('editProfile'); ?>">
-		<span class="zf-green"><?php echo $this->escapeHtml($user->getDisplayName()); ?>'s</span>
+		<span class="zf-green"><?php echo $this->escapeHtml($user->getFirstName().' '.$user->getLastName()); ?></span>
 	</a> Social Wall
 </h1>
-<a href="#" class="btn btn-success" style="float:right; position: relative; margin-top: 20px;">Manage your groups</a>
+<a href="category" class="btn btn-success" style="float:right; position: relative; margin-top: 20px;">
+	<?php echo $this->translate('Manage your groups'); ?>
+</a>
 <div style="clear: both"></div>
 <hr />
 <h4>Мessages shelf: (here you'll see new messages) - NOT READY YET</h4> 
 <span style="color: #b30606">Message for deletion 1</span><a href="">[x]</a> | 
 <span style="color: #b30606">You have new follower!</span><a href="">[x]</a>
+
 <hr />
-<h4>You follow: (<a href="<?php echo $this->url('find-people');?>"><?php echo $this->translate('find more people to follow'); ?></a>)</h4>
+<h4>
+	<?php echo $this->translate('You follow:'); ?> 
+	(<a href="<?php echo $this->url('find-person');?>">
+		<?php echo $this->translate('find more people to follow'); ?>
+	</a>)
+</h4>
 <?php 
 // BEGIN showing friends and following
 foreach ($this->myFriends as $myFriend) {
 	
-	echo '<span class="zf-green">'.$myFriend->getDisplayName(). '</span>';
-	echo '<a href="'.$this->url('delete-person/default', array('controller' => 'index', 'action'=>'delete-person', 'id' => $myFriend->getId())).'" 
-	onclick="return confirm(\'Stop following '.$myFriend->getDisplayName().'?\')" title="Remove this person">[x]</a>';
-	$myFriendsArray[] = $myFriend->getDisplayName(); // Create an array and fill it with the names of the current user's friends whitch will user later
+	echo '<span class="zf-green">'.$this->escapeHtml($myFriend->getFirstName().' '.$myFriend->getLastName()). '</span>';
+	?>
+	<a href="<?php echo $this->url('delete-person/default', array('controller' => 'index', 'action'=>'delete-person', 'id' => $myFriend->getId())); ?>" 
+	onclick="return confirm('<?php echo $this->translate('Stop following ').$this->escapeHtml($myFriend->getFirstName().' '.$myFriend->getLastName()).'?' ?>')" title="Remove this person">[x]
+	</a>
+	<?php
+	// Create an array and fill it with the names of the current user's friends whitch will use later
+	$myFriendsArray[] = $this->escapeHtml($myFriend->getFirstName().' '.$myFriend->getLastName());
 	echo ' | ';
 } 
 if (!isset($myFriend)) {
-	echo "<div style='font-size: 18px; color:#ccc;'>You don't follow nobody yet. Click the above link to find people.</div>";
+?>
+<div style='font-size: 18px; color:#ccc;'>
+	<?php echo $this->translate('You don\'t follow nobody yet. Click the above link to find people.'); ?>
+</div>
+	
+<?php
 }
-$myFriendsArray[] = $this->identity()->getDisplayName(); // Add to array current user DisplayName for displayng his articles
+// Add to array current user name for displayng his articles
+$myFriendsArray[] = $this->identity()->getFirstName().' '.$this->identity()->getLastName(); 
 ?>
 <hr />
-<h4>They follow you: (they can see only your public events unless you add and categorize them)</h4>
+<h4>
+	<?php echo $this->translate('They follow you: (they can see only your public events unless you add and categorize them)'); ?>
+</h4>
 <?php 
 foreach ($this->friendsWithMe as $friendWithMe) {
-	echo '<span class="zf-green">'.$friendWithMe->getDisplayName(). '</span>';
-	if(!in_array($friendWithMe->getDisplayName(), $myFriendsArray)) {
+	echo '<span class="zf-green">'.$this->escapeHtml($friendWithMe->getFirstName().' '.$friendWithMe->getLastName()). '</span>';
+	if(!in_array($friendWithMe->getFirstName().' '.$friendWithMe->getLastName(), $myFriendsArray)) {
 ?>
-		<a href="<?php echo $this->url('add-person/default', array('controller' => 'index', 'action'=>'add-person', 'id' => $friendWithMe->getId()));?>" onclick="return confirm('Follow <?php echo $friendWithMe->getDisplayName(); ?> ?')" title="Add this person">(+)</a>
+	<a href="<?php echo $this->url('add-person/default', array('controller' => 'index', 'action'=>'add-person', 'id' => $friendWithMe->getId()));?>" onclick="return confirm('<?php echo $this->translate('Follow');  echo $friendWithMe->getFirstName().' '.$friendWithMe->getLastName(); ?> ?')" title="Add this person">(+)</a>
 <?php
 	}
 	echo ' | ';
 } 
 if (!isset($friendWithMe)) {
-	echo "<div style='font-size: 18px; color:#ccc;'>Nobody follow you yet.</div>";
+?>
+<div style="font-size: 18px; color:#ccc;">
+	<?php echo $this->translate('Nobody follow you yet.'); ?>
+</div>
+	
+<?php
 }
 // END showing friends and following
 ?>
@@ -58,7 +83,7 @@ echo '<br/>';
 echo $this->formRow($form->get('event'));
 echo '</div>';
 echo '<div style="position: relative; float: left; margin-left: 20px;">';
-echo 'Choose who can see it:<br />';
+echo $this->translate('Choose who can see it:<br />');
 echo $this->formRow($form->get('followers'));
 echo '</div>';
 echo '<div style="clear: both"></div>';
@@ -75,7 +100,10 @@ echo $this->form()->closeTag();
 <?php 
 // BEGIN showing the articles
 foreach ($this->articles as $article) : ?>
-<?php if(is_object($article->getAuthor()) && in_array($article->getAuthor()->getDisplayName(), $myFriendsArray)){ //checking the display name in every iteration whether current article display name exist in the array with friends. If not exist current article isn't showing
+<?php
+//checking the name in every iteration whether current article display name exist in the array with friends. If not exist current article isn't showing
+	if(is_object($article->getAuthor()) &&
+	in_array($article->getAuthor()->getFirstName().' '.$article->getAuthor()->getLastName(), $myFriendsArray)){ 
 
 /**
 *
@@ -87,20 +115,25 @@ foreach ($this->articles as $article) : ?>
 
 <div style="border: solid 0px #ADFF2F; box-shadow: 0px 0px 5px rgba(125, 213, 66, 1); border-radius: 0px;padding: 10px; width: 485px; height: auto; background: #fff; float: left; margin-left: 15px; margin-top: 15px; " onMouseOver="this.style.boxShadow='0px 0px 5px rgba(0, 80, 133, 1)'" onMouseOut="this.style.boxShadow='0px 0px 5px rgba(125, 213, 66, 1)'">
 	<div style="font-weight: bold; font-size: 16px; float: left; margin-right: 10px;">
-		<?php if (is_object($article->getAuthor())) echo $this->escapeHtml($article->getAuthor()->getDisplayName());?> - 
+		<?php if (is_object($article->getAuthor())) 
+			echo $this->escapeHtml($article->getAuthor()->getFirstName().' '.$article->getAuthor()->getLastName());
+		?> - 
 	</div>
 	<div class="zf-green" style=" font-size: 16px;">
 		<div style="float: left;">
-    	<?php echo $this->escapeHtml($article->getCreated()->format('Y-m-d H:i:s'));?>
+    	<?php echo $this->escapeHtml($article->getCreated()->format('Y-m-d H:i'));?>
     	</div>
     	<?php 
-    		if($article->getAuthor()->getUsername() === $this->identity()->getUsername()) { // only show next lines if this is the owner of the article
+    		// only show next lines if this is the owner of the article
+    		if($article->getAuthor()->getUsername() === $this->identity()->getUsername()) {
     	?>
     	<div style="float: right;">
-    	<a href="<?php echo $this->url('edit-article/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
-            array('controller' => 'index', 'action'=>'edit-article', 'id' => $article->getId()));?>">Edit</a> | 
-        <a href="<?php echo $this->url('delete-article/default', // SUPER IMPORTANT use csn-cms/<segment>
-            array('controller' => 'index', 'action'=>'delete-article', 'id' => $article->getId()));?>" onclick="return confirm('Do you really want to delete this event?')">Delete</a>
+    	<a href="<?php echo $this->url('edit-article/default', array('controller' => 'index', 'action'=>'edit-article', 'id' => $article->getId()));?>">
+            <?php echo $this->translate('Edit'); ?>
+        </a> | 
+        <a href="<?php echo $this->url('delete-article/default', array('controller' => 'index', 'action'=>'delete-article', 'id' => $article->getId()));?>" onclick="return confirm('<?php echo $this->translate('Do you really want to delete this event?'); ?>')">
+            <?php echo $this->translate('Delete'); ?>
+        </a>
         </div>
         <?php } ?>
 	</div>
@@ -112,12 +145,13 @@ foreach ($this->articles as $article) : ?>
     	<?php echo $article->getIntrotext();?>
     </div>
 	<div class="zf-green" style=" font-size: 16px;">
-        <a href="<?php echo $this->url('view-article/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
-            array('controller' => 'index', 'action'=>'view-article', 'id' => $article->getId())).'#comments';?>">view comments (
-            <?php echo count($article->getComments()); ?>
-            )</a> |
-        <a href="<?php echo $this->url('view-article/default', // SUPER IMPORTANT use csn-cms/<segment> NOT ONLY csn-cms
-            array('controller' => 'index', 'action'=>'view-article', 'id' => $article->getId()));?>">View entire event</a>
+        <a href="<?php echo $this->url('view-article/default', array('controller' => 'index', 'action'=>'view-article', 'id' => $article->getId())).'#comments';?>">
+            <?php echo $this->translate('comments'); ?>
+            (<?php echo count($article->getComments()); ?>)
+		</a> |
+        <a href="<?php echo $this->url('view-article/default', array('controller' => 'index', 'action'=>'view-article', 'id' => $article->getId()));?>">
+            <?php echo $this->translate('View entire event'); ?>
+		</a>
     </div>
 </div>
 

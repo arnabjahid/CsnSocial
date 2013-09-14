@@ -4,6 +4,9 @@ return array(
 	'controllers' => array(
         'invokables' => array(
             'CsnSocial\Controller\Index' => 'CsnSocial\Controller\IndexController',
+            'CsnSocial\Controller\Person' => 'CsnSocial\Controller\PersonController',
+			'CsnSocial\Controller\Comment' => 'CsnSocial\Controller\CommentController',
+			'CsnSocial\Controller\Category' => 'CsnSocial\Controller\CategoryController',
         ),
     ),
     'router' => array(
@@ -33,14 +36,14 @@ return array(
 					),
 				),
 			),
-			'find-people' => array(
+			'find-person' => array(
 				'type'    => 'Literal',
 				'options' => array(
-					'route'    => '/find-people',
+					'route'    => '/find-person',
 					'defaults' => array(
 						'__NAMESPACE__' => 'CsnSocial\Controller',
-						'controller'    => 'Index',
-						'action'        => 'findPeople',
+						'controller'    => 'Person',
+						'action'        => 'findPerson',
 					),
 				),
 			'may_terminate' => true,
@@ -51,8 +54,8 @@ return array(
 							'route'    => '/[...]',
 							'defaults' => array(
 								'__NAMESPACE__' => 'CsnSocial\Controller',
-								'controller'    => 'Index',
-								'action'        => 'findPeople',
+								'controller'    => 'Person',
+								'action'        => 'findPerson',
 							),
 						),
 					),
@@ -64,7 +67,7 @@ return array(
 					'route'    => '/add-person',
 					'defaults' => array(
 						'__NAMESPACE__' => 'CsnSocial\Controller',
-						'controller'    => 'Index',
+						'controller'    => 'Person',
 						'action'        => 'addPerson',
 					),
 				),
@@ -76,7 +79,7 @@ return array(
 							'route'    => '[/:id]',
 							'defaults' => array(
 								'__NAMESPACE__' => 'CsnSocial\Controller',
-								'controller'    => 'Index',
+								'controller'    => 'Person',
 								'action'        => 'addPerson',
 							),
 						),
@@ -89,7 +92,7 @@ return array(
 					'route'    => '/delete-person',
 					'defaults' => array(
 						'__NAMESPACE__' => 'CsnSocial\Controller',
-						'controller'    => 'Index',
+						'controller'    => 'Person',
 						'action'        => 'deletePerson',
 					),
 				),
@@ -101,7 +104,7 @@ return array(
 							'route'    => '/[:id]',
 							'defaults' => array(
 								'__NAMESPACE__' => 'CsnSocial\Controller',
-								'controller'    => 'Index',
+								'controller'    => 'Person',
 								'action'        => 'deletePerson',
 							),
 						),
@@ -183,38 +186,13 @@ return array(
 					),
 				),
 			),
-			'delete-comment' => array(
-				'type'    => 'Literal',
-				'options' => array(
-					'route'    => '/delete-comment',
-					'defaults' => array(
-						'__NAMESPACE__' => 'CsnSocial\Controller',
-						'controller'    => 'Index',
-						'action'        => 'deleteComment',
-					),
-				),
-			'may_terminate' => true,
-				'child_routes' => array(
-					'default' => array(
-						'type'    => 'Segment',
-						'options' => array(
-							'route'    => '/[:id]',
-							'defaults' => array(
-								'__NAMESPACE__' => 'CsnSocial\Controller',
-								'controller'    => 'Index',
-								'action'        => 'deleteComment',
-							),
-						),
-					),
-				),
-			),
 			'edit-comment' => array(
 				'type'    => 'Literal',
 				'options' => array(
 					'route'    => '/edit-comment',
 					'defaults' => array(
 						'__NAMESPACE__' => 'CsnSocial\Controller',
-						'controller'    => 'Index',
+						'controller'    => 'Comment',
 						'action'        => 'editComment',
 					),
 				),
@@ -226,8 +204,58 @@ return array(
 							'route'    => '/[:article]/[:id]',
 							'defaults' => array(
 								'__NAMESPACE__' => 'CsnSocial\Controller',
-								'controller'    => 'Index',
+								'controller'    => 'Comment',
 								'action'        => 'editComment',
+							),
+						),
+					),
+				),
+			),
+			'delete-comment' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/delete-comment',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Comment',
+						'action'        => 'deleteComment',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[:id]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Comment',
+								'action'        => 'deleteComment',
+							),
+						),
+					),
+				),
+			),
+			'category' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/category',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Category',
+						'action'        => 'index',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[:id]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Category',
+								'action'        => 'index',
 							),
 						),
 					),
@@ -244,4 +272,7 @@ return array(
 		),
 		'display_exceptions' => true,
     ),
+    'translator' => array(
+        'locale' => 'bg_BG'
+    )
 );

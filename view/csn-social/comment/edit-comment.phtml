@@ -11,11 +11,7 @@ echo '<div style="position: relative;">';
 echo '<div style="position: relative; float: left; ">';
 echo $this->formRow($form->get('title'));
 echo '<br/>';
-echo $this->formRow($form->get('event'));
-echo '</div>';
-echo '<div style="position: relative; float: left; margin-left: 20px;">';
-echo $this->translate('Choose who can see it:<br />');
-echo $this->formRow($form->get('followers'));
+echo $this->formRow($form->get('text'));
 echo '</div>';
 echo '<div style="clear: both"></div>';
 echo $this->formSubmit($form->get('submit'));
@@ -24,14 +20,10 @@ echo $this->form()->closeTag();
 // END showing the form
 
 if($message = $this->message){
-?>
-	<div style="color: red">
-		<?php echo $message; ?>
-	</div>
-<?php
+	echo '<div style="color: red">'.$message.'</div>';
 }
 ?>
 
 
 </div>
-<a href="<?php echo $this->url('social'); ?>" class="btn btn-success"><?php echo $this->translate('Back to my wall'); ?></a>
+<a href="<?php echo $this->url('view-article/default', array('controller' => 'index', 'action'=>'view-article', 'id' => $this->id)).'#comments'; ?>" class="btn btn-success"><?php echo $this->translate('Back to comments'); ?></a>

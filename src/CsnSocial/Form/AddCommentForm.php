@@ -38,7 +38,7 @@ class AddCommentForm extends Form
             'name' => 'submit',
             'attributes' => array(
                 'type'  => 'submit',
-                'value' => 'Comment',
+                'value' => 'Add comment',
                 'class' => 'btn btn-success btn-lg',
             ),
         )); 

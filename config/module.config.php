@@ -6,7 +6,7 @@ return array(
             'CsnSocial\Controller\Index' => 'CsnSocial\Controller\IndexController',
             'CsnSocial\Controller\Person' => 'CsnSocial\Controller\PersonController',
 			'CsnSocial\Controller\Comment' => 'CsnSocial\Controller\CommentController',
-			'CsnSocial\Controller\Category' => 'CsnSocial\Controller\CategoryController',
+			'CsnSocial\Controller\Group' => 'CsnSocial\Controller\GroupController',
         ),
     ),
     'router' => array(
@@ -236,13 +236,13 @@ return array(
 					),
 				),
 			),
-			'category' => array(
+			'groups' => array(
 				'type'    => 'Literal',
 				'options' => array(
-					'route'    => '/category',
+					'route'    => '/groups',
 					'defaults' => array(
 						'__NAMESPACE__' => 'CsnSocial\Controller',
-						'controller'    => 'Category',
+						'controller'    => 'Group',
 						'action'        => 'index',
 					),
 				),
@@ -254,7 +254,7 @@ return array(
 							'route'    => '/[:id]',
 							'defaults' => array(
 								'__NAMESPACE__' => 'CsnSocial\Controller',
-								'controller'    => 'Category',
+								'controller'    => 'Group',
 								'action'        => 'index',
 							),
 						),

@@ -9,6 +9,16 @@ edit group<br/>
 delete group<br/>
 <?php
 
+// BEGIN showing the form
+$form = $this->form;
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo $this->formRow($form->get('group'));
+echo $this->formSubmit($form->get('submit'));
+echo $this->form()->closeTag();
+// END showing the form
+
 if($message = $this->message){
 	echo $message;
 }

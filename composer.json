@@ -21,7 +21,7 @@
             "name":      "Nikola Vasilev",
             "email":     "niko7vasilev@gmail.com",
             "role":      "Developer"
-        },
+        }
     ],
     "minimum-stability": "dev",
     "require": {

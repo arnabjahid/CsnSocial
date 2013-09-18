@@ -39,6 +39,28 @@ $comments = $this->comments;
     	<?php echo $article->getFulltext();?>
     </div>
 </div>
+<?php
+	if(!$hasUserVoted) {
+?>
+	<a href="<?php echo $this->url('vote/default',
+                            array('controller' => 'index', 'action'=>'vote', 'id' => $article->getId(), 'id2' => 1), true);?>">
+		<?php echo $this->translate('Like');  ?>
+	</a>
+	<a href="<?php echo $this->url('vote/default',
+                            array('controller' => 'index', 'action'=>'vote', 'id' => $article->getId(), 'id2' => 0), true);?>">
+		<?php echo $this->translate('Dislike');  ?>
+	</a>
+<?php 
+    } else if($hasUserVoted == 'no') {
+		echo $this->translate('You have no permission for voting!');
+	}
+	else {
+		echo $this->translate('You have already voted!');
+	}
+	echo '<br/>';
+	echo 'Likes: '. $article->getVote()->getLikesCount(). ' | '; 
+	echo 'Dislikes: '. $article->getVote()->getDislikesCount();
+?>
 </div>
 <div class="jumbotron">
 <!-- Note that id="comments" is for anchoring -->

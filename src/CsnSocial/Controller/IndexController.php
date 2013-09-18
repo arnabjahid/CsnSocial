@@ -100,6 +100,8 @@ class IndexController extends AbstractActionController {
         $query = $this->getEntityManager()->createQuery($dqlFriendsWithMe);
         $query->setMaxResults(30);
         $friendsWithMe = $query->getResult();
+        
+        
 		
         return new ViewModel(array('user' => $user, 'form' => $form, 'articles' => $articles, 'myFriends' => $myFriends, 'friendsWithMe' => $friendsWithMe));
     } 
@@ -142,8 +144,17 @@ class IndexController extends AbstractActionController {
 					return $this->redirect()->toRoute('view-article/default', array('controller' => 'index', 'action'=>'view-article', 'id' => $id));
 				}
 			}
+			
+			$counterViews = $article->getViewCount();
+		    $counterViews +=1;
+		    $article->setViewCount($counterViews);
+		    $this->getEntityManager()->persist($article);
+		    $this->getEntityManager()->flush();
+
+			$hasUserVoted = $this->hasUserVoted($article);
+			
 			$comments = $this->getEntityManager()->getRepository('CsnCms\Entity\Comment')->findBy(array('article' => $id), array('created' => 'DESC'));
-			return new ViewModel(array('article' => $article,'comments' => $comments, 'form' => $form, 'message' => $message));
+			return new ViewModel(array('article' => $article,'comments' => $comments, 'form' => $form, 'message' => $message, 'hasUserVoted' => $hasUserVoted));
 		}else {
 			return $this->redirect()->toRoute('social');
 		}
@@ -221,9 +232,14 @@ class IndexController extends AbstractActionController {
 		        	$this->getEntityManager()->flush();
 				  }
 			}
+
 			//Delete the article
-			$this->getEntityManager()->remove($article);
-			$this->getEntityManager()->flush();	
+			$this->getEntityManager()->remove($article);		
+			//Delete votes
+			$voteId = $article->getVote();
+			$this->getEntityManager()->remove($voteId);
+			$this->getEntityManager()->flush();
+			
 			return $this->redirect()->toRoute('social');
 		}else {
 			return $this->redirect()->toRoute('social');
@@ -232,6 +248,49 @@ class IndexController extends AbstractActionController {
         return new ViewModel(array('person' => $person, 'form' => $form, 'message' => $message));
     }
     
+    public function voteAction()
+	{
+		$id2 = $this->params()->fromRoute('id2');
+		$id = $this->params()->fromRoute('id');
+        if (!$id) {
+            return $this->redirect()->toRoute('social');
+        }
+        
+		if($article = $this->getEntityManager()->getRepository('CsnCms\Entity\Article')->findOneBy(array('id' => $id))) {
+		
+			$currentVoteCount = 0;
+		
+			if($id2>0)
+			{
+				$currentVoteCount = $article->getVote()->getLikesCount();
+				$currentVoteCount++;
+		        $article->getVote()->setLikesCount($currentVoteCount);
+			}
+			else
+			{
+				$currentVoteCount = $article->getVote()->getDislikesCount();
+				$currentVoteCount++;
+				$article->getVote()->setDislikesCount($currentVoteCount);
+			}
+		
+			$usersVoted = $article->getVote()->getUsersVoted();
+			$usersVoted[] = $this->identity();
+		
+			try
+			{
+			
+				$this->getEntityManager()->persist($article);
+				$this->getEntityManager()->flush();
+			}
+			catch (\Exception $ex)
+			{
+			}
+		
+			return $this->redirect()->toRoute('view-article/default', array('controller' => 'index', 'action' => 'view-article', 'id' => $id));
+		}else{
+			return $this->redirect()->toRoute('social');
+		}
+	}
 
 	/**
      * Prepare data method
@@ -331,6 +390,27 @@ class IndexController extends AbstractActionController {
 
         return $event;
     }
+    
+    public function hasUserVoted($article)
+	{
+		$dql = "SELECT count(v.id) FROM CsnCms\Entity\Vote v LEFT JOIN v.usersVoted u WHERE v.id = ?0 AND u.id =?1";
+        $query = $this->getEntityManager()->createQuery($dql);
+		
+		$articleId = $article->getVote()->getId();
+
+		$userId = $this->identity();
+		$hasUserVoted = 'no';
+		
+		if($articleId != null && $userId != null)
+		{
+			$userId = $this->identity()->getId();
+			$query->setParameter(0, $articleId);
+			$query->setParameter(1, $userId);
+			$hasUserVoted = $query->getSingleScalarResult();
+		}
+		
+		return $hasUserVoted;
+	}
 	
 	/**
      * @return EntityManager

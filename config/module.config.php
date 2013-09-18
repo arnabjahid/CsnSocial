@@ -311,6 +311,31 @@ return array(
 					),
 				),
 			),
+			'vote' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/vote',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Index',
+						'action'        => 'vote',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[:id]/[:id2]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Index',
+								'action'        => 'vote',
+							),
+						),
+					),
+				),
+			),
 		),
 	),
 	'view_manager' => array(

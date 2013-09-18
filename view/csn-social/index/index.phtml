@@ -144,17 +144,23 @@ foreach ($this->articles as $article) : ?>
 	<div style=" font-size: 18px; color: #555; word-wrap:break-word;">
     	<?php echo $article->getIntrotext();?>
     </div>
-	<div class="zf-green" style=" font-size: 16px;">
+	<div class="zf-green" style=" font-size: 16px; float: left;">
         <a href="<?php echo $this->url('view-article/default', array('controller' => 'index', 'action'=>'view-article', 'id' => $article->getId())).'#comments';?>">
             <?php echo $this->translate('comments'); ?>
             (<?php echo count($article->getComments()); ?>)
 		</a> |
         <a href="<?php echo $this->url('view-article/default', array('controller' => 'index', 'action'=>'view-article', 'id' => $article->getId()));?>">
             <?php echo $this->translate('View entire event'); ?>
-		</a>
+            <?php $getCount = $article->getViewCount(); echo '('.$getCount.')'; ?>
+		</a>	
+    </div>
+    <div style="float: right; font-size: 16px;">
+	<?php 
+		echo 'Likes: '. $article->getVote()->getLikesCount(). ' | '; 
+		echo 'Dislikes: '. $article->getVote()->getDislikesCount();
+	?> 
     </div>
 </div>
-
 
 <?php } ?>
 <?php endforeach; 

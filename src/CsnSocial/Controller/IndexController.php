@@ -24,6 +24,7 @@ use CsnSocial\Form\AddCommentForm;
 use CsnSocial\Form\AddCommentFilter;
 
 use CsnCms\Entity\Article;
+use CsnCms\Entity\Vote;
 use CsnCms\Entity\Comment;
 use CsnUser\Entity\User;
 
@@ -62,7 +63,7 @@ class IndexController extends AbstractActionController {
 		
 		$user = $this->identity();
 		
-		$article = new Article;
+		$article = new Article();
 		$form = new AddEventForm();
 		$request = $this->getRequest();
 		if ($request->isPost()) {
@@ -72,6 +73,9 @@ class IndexController extends AbstractActionController {
                         $data = $form->getData();
                         
 						$this->prepareData($article, $data, false);
+						//echo '<pre>';
+						//print_r($article);
+						//echo '</pre>';
 		                $this->getEntityManager()->persist($article);
 		                $this->getEntityManager()->flush();
 		                return $this->redirect()->toRoute('social');
@@ -234,24 +238,27 @@ class IndexController extends AbstractActionController {
      *
      * Prepare data to be inserted in database
      */
-	public function prepareData($artcile, $data, $update) {
+	public function prepareData($article, $data, $update) {
 		
 		// prepare data for updating
     	if(!$update){
-    		$artcile->setAuthor($this->identity());
-    		$artcile->setCreated(new \DateTime());
+    		$article->setAuthor($this->identity());
+    		$article->setCreated(new \DateTime());
     	}
     	
+    	$vote = new Vote();
+
+		$article->setVote($vote);
     	// prepare data for inserting
-        $artcile->setFulltext($data['event']);
+        $article->setFulltext($data['event']);
         
-        $artcile->setTitle($data['title']);
+        $article->setTitle($data['title']);
         
         $slug = $this->prepareSlug($data['title']);
-        $artcile->setSlug($slug);
+        $article->setSlug($slug);
         
         $introText = $this->prepareIntroText($data['event']);
-        $artcile->setIntrotext($introText);
+        $article->setIntrotext($introText);
     }
     
     /**

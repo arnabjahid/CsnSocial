@@ -15,6 +15,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
 use CsnSocial\Form\AddGroupForm;
+use CsnSocial\Form\AddGroupFilter;
 
 use CsnCms\Entity\Category;
 
@@ -34,9 +35,9 @@ class GroupController extends AbstractActionController
 	protected $translator;
     
     /**
-     * Category index action
+     * Group index action
      *
-     * ???
+     * View and add groups
      *
      */
     public function indexAction() {
@@ -46,44 +47,116 @@ class GroupController extends AbstractActionController
 		}
 		
 		$user = $this->identity();
-		
+
 		$group = new Category;
 		$form = new AddGroupForm();
 		$request = $this->getRequest();
 		if ($request->isPost()) {
-			//$form->setInputFilter(new AddEventFilter($this->getServiceLocator()));
+			$form->setInputFilter(new AddGroupFilter($this->getServiceLocator()));
 			$form->setData($request->getPost());
 			if ($form->isValid()) {
 				$data = $form->getData();
-                
-                $group->setName($data['group']);  
-				//$this->prepareData($article, $data, false);
-				$this->getEntityManager()->persist($group);
-				$this->getEntityManager()->flush();
-				return $this->redirect()->toRoute('groups');
+                if(!$groupExist = $this->getEntityManager()->getRepository('CsnCms\Entity\Category')->findOneBy(array('name' => $data['group'], 'user' => $user->getId()))) {
+		            $group->setUser($user);
+		            $group->setName($data['group']);  
+
+					$this->getEntityManager()->persist($group);
+					$this->getEntityManager()->flush();
+					return $this->redirect()->toRoute('groups');
+				}else{
+					$message = $this->getTranslator()->translate('This group already exist!');
+					return new ViewModel(array('message' => $message, 'form' => $form));
+				}
 			}
 		}
-        /*
-        $dqlArticles = "SELECT a, u, l, c FROM CsnCms\Entity\Article a LEFT JOIN a.author u LEFT JOIN a.language l LEFT JOIN a.categories c   ORDER BY a.created DESC"; 
-        $query = $this->getEntityManager()->createQuery($dqlArticles);
-        //$query->setMaxResults(30);
-        $articles = $query->getResult();
-        
-        $dqlMyFriends = "SELECT u, f FROM CsnUser\Entity\User u LEFT JOIN u.friendsWithMe f WHERE f.id = ".$user->getId(); 
+        if($groups = $this->getEntityManager()->getRepository('CsnCms\Entity\Category')->findBy(array('user' => $user->getId()))){
+        	
+        }else{
+        	$message = $this->getTranslator()->translate('You don\'t have any gorups yet');
+        }
 
-        $query = $this->getEntityManager()->createQuery($dqlMyFriends);
-        $query->setMaxResults(30);
-        $myFriends = $query->getResult();
+        return new ViewModel(array('form' => $form, 'groups' => $groups, 'message' => $message));
+    }
+    
+    /**
+     * Group edit action
+     *
+     * Rename groups
+     *
+     */
+    public function editGroupAction() {
+    
+    	$id = $this->params()->fromRoute('id');
+        if (!$id) {
+            return $this->redirect()->toRoute('social');
+        }
         
-        //print $query->getSQL();
-        
-        $dqlFriendsWithMe = "SELECT u, f FROM CsnUser\Entity\User u LEFT JOIN u.myFriends f WHERE f.id = ".$user->getId(); 
+        $user = $this->identity();
 
-        $query = $this->getEntityManager()->createQuery($dqlFriendsWithMe);
-        $query->setMaxResults(30);
-        $friendsWithMe = $query->getResult();
-		*/
-        return new ViewModel(array('user' => $user, 'form' => $form, 'articles' => $articles, 'myFriends' => $myFriends, 'friendsWithMe' => $friendsWithMe));
+		if($group = $this->getEntityManager()->getRepository('CsnCms\Entity\Category')->findOneBy(array('id' => $id, 'user' => $user->getId()))) {
+
+			$form = new AddGroupForm();
+			$data = array(
+				'group'    => $group->getName()
+			);
+			$form->setData($data);
+			$request = $this->getRequest();
+			if ($request->isPost()) {
+				$form->setInputFilter(new AddGroupFilter($this->getServiceLocator()));
+				$form->setData($request->getPost());
+				if ($form->isValid()) {
+					$data = $form->getData();
+				    if(!$groupExist = $this->getEntityManager()->getRepository('CsnCms\Entity\Category')->findOneBy(array('name' => $data['group'], 'user' => $user->getId()))) {
+						$group->setName($data['group']);
+						$this->getEntityManager()->persist($group);
+						$this->getEntityManager()->flush();
+						$message = $this->getTranslator()->translate('Update successful!');
+					}else{
+						$message = $this->getTranslator()->translate('This group already exist!');
+					}
+					
+					return new ViewModel(array('form' => $form, 'message' => $message));
+				}
+			}
+             
+			return new ViewModel(array('group' => $group, 'form' => $form));
+		}else {
+			return $this->redirect()->toRoute('social');
+		}
+
+    }
+    
+    /**
+     * Group delete action
+     *
+     * Delete groups
+     *
+     */
+    public function deleteGroupAction() {
+    
+    	$id = $this->params()->fromRoute('id');
+        if (!$id) {
+            return $this->redirect()->toRoute('social');
+        }
+        
+        $user = $this->identity();
+        
+		if($group = $this->getEntityManager()->getRepository('CsnCms\Entity\Category')->findOneBy(array('id' => $id, 'user' => $user->getId()))) {
+			//Delete all comments first
+			/*if($comments = $this->getEntityManager()->getRepository('CsnCms\Entity\Comment')->findBy(array('article' => $id, ))){
+				foreach($comments as $comment){
+				  	$this->getEntityManager()->remove($comment);
+		        	$this->getEntityManager()->flush();
+				  }
+			}*/
+			//Delete the article
+			$this->getEntityManager()->remove($group);
+			$this->getEntityManager()->flush();	
+			return $this->redirect()->toRoute('groups');
+		}else {
+			return $this->redirect()->toRoute('groups');
+		}
+    	//return new ViewModel(array('form' => $form, 'groups' => $groups, 'message' => $message));
     }
     
     /**

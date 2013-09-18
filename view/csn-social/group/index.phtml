@@ -1,12 +1,6 @@
 <hr />
 <div class="jumbotron">
-add group<br/>
-------------<br/>
 
-show groups here<br/>
----------------<br/>
-edit group<br/>
-delete group<br/>
 <?php
 
 // BEGIN showing the form
@@ -19,9 +13,36 @@ echo $this->formSubmit($form->get('submit'));
 echo $this->form()->closeTag();
 // END showing the form
 
+$groups = $this->groups;
+
+foreach($groups as $group){
+?>
+<div style="border: solid 0px #ADFF2F; box-shadow: 0px 0px 5px rgba(125, 213, 66, 1); border-radius: 0px;padding: 10px; width: 320px; height: auto; background: #fff; float: left; margin-left: 15px; margin-top: 15px; " onMouseOver="this.style.boxShadow='0px 0px 5px rgba(0, 80, 133, 1)'" onMouseOut="this.style.boxShadow='0px 0px 5px rgba(125, 213, 66, 1)'">
+	<div style="float: left">
+	<?php
+		echo $group->getName();
+	?>
+	</div>
+	<div style="float: right">
+		<a href="<?php echo $this->url('edit-group/default', array('controller' => 'group', 'action'=>'edit-group', 'id' => $group->getId()));?>">
+			<?php echo $this->translate('Edit'); ?>
+		</a> |
+		<a href="<?php echo $this->url('delete-group/default', array('controller' => 'group', 'action'=>'delete-group', 'id' => $group->getId()));?>" onclick="return confirm('<?php echo $this->translate('Do you really want to delete this group?'); ?>')">
+			<?php echo $this->translate('Delete'); ?>
+		</a>
+	</div>
+	<div style="clear: both"></div>
+	<a href="#"><?php echo $this->translate('Add a person'); ?></a>
+</div>
+<?php
+}
+?>
+<div style="clear: both"></div>
+<?php
+
 if($message = $this->message){
 	echo $message;
 }
 ?>
-</div>
+</div><br />
 <a href="<?php echo $this->url('social'); ?>" class="btn btn-success"><?php echo $this->translate('Back to my wall'); ?></a>

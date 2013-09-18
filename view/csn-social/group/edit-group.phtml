@@ -1,0 +1,22 @@
+<hr />
+<div class="jumbotron">
+
+<?php
+
+// BEGIN showing the form
+$form = $this->form;
+$form->get('submit')->setValue('Update group');
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo $this->formRow($form->get('group'));
+echo $this->formSubmit($form->get('submit'));
+echo $this->form()->closeTag();
+// END showing the form
+
+if($message = $this->message){
+	echo $message;
+}
+?>
+</div><br />
+<a href="<?php echo $this->url('groups'); ?>" class="btn btn-success"><?php echo $this->translate('Back to groups'); ?></a>

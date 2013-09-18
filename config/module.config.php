@@ -261,6 +261,56 @@ return array(
 					),
 				),
 			),
+			'edit-group' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/edit-group',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Group',
+						'action'        => 'editGroup',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[:id]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Group',
+								'action'        => 'editGroup',
+							),
+						),
+					),
+				),
+			),
+			'delete-group' => array(
+				'type'    => 'Literal',
+				'options' => array(
+					'route'    => '/delete-group',
+					'defaults' => array(
+						'__NAMESPACE__' => 'CsnSocial\Controller',
+						'controller'    => 'Group',
+						'action'        => 'deleteGroup',
+					),
+				),
+			'may_terminate' => true,
+				'child_routes' => array(
+					'default' => array(
+						'type'    => 'Segment',
+						'options' => array(
+							'route'    => '/[:id]',
+							'defaults' => array(
+								'__NAMESPACE__' => 'CsnSocial\Controller',
+								'controller'    => 'Group',
+								'action'        => 'deleteGroup',
+							),
+						),
+					),
+				),
+			),
 		),
 	),
 	'view_manager' => array(
@@ -272,7 +322,8 @@ return array(
 		),
 		'display_exceptions' => true,
     ),
+    /*
     'translator' => array(
         'locale' => 'bg_BG'
-    )
+    )*/
 );

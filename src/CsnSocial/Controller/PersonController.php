@@ -149,7 +149,14 @@ class PersonController extends AbstractActionController
         	foreach($user->getMyFriends() as $friend){
         	
 				if($friend->getId() == $userToDel->getId()){
-
+					
+					//Delete first from table group
+					$friendsInGroup = $this->getEntityManager()->getRepository('CsnSocial\Entity\Group')->findBy(array('owner' => $user->getId()));
+					
+					foreach ($friendsInGroup as $friendInGroup) {
+						$this->getEntityManager()->remove($friendInGroup);
+					}
+					//Delete from table friends
 					$user->removeMyFriend($userToDel);
 				    $this->getEntityManager()->persist($user);
 				    $this->getEntityManager()->flush();

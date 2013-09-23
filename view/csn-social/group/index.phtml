@@ -32,7 +32,7 @@ foreach($groups as $group){
 		</a>
 	</div>
 	<div style="clear: both"></div>
-	<a href="#"><?php echo $this->translate('Add a person'); ?></a>
+	<a href="<?php echo $this->url('view-members/default', array('controller' => 'group', 'action'=>'view-members', 'id' => $group->getId()));?>"><?php echo $this->translate('Manage'); ?></a>
 </div>
 <?php
 }

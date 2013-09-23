@@ -1,0 +1,58 @@
+<?php 
+$groupName = $this->groupName;
+$groupId = $this->groupId;
+$friendsInGroup = $this->friendsInGroup;
+
+?>
+Add people to <?php echo '"'.$groupName.'"'; ?>  group
+<br />
+<?php
+
+if($message2 = $this->message2){
+	echo $message2;
+}else {
+	echo 'People in this group:<br />';
+
+	foreach ($friendsInGroup as $friendInGroup) {
+		$friendsArray[] = $friendInGroup->getMember()->getId();
+		echo '<span class="zf-green">'.$this->escapeHtml($friendInGroup->getMember()->getFirstName().' '.$friendInGroup->getMember()->getLastName()). '</span>';
+	?>
+	<a href="<?php echo $this->url('remove-member/default', array('controller' => 'group', 'action'=>'remove-member', 'id' => $groupId, 'id2' => $friendInGroup->getMember()->getId())); ?>" 
+	title="Remove this person">[-]
+	</a>
+	<?php
+	}
+}
+?>
+<br />
+People which I follow:
+	<br />
+<?php
+
+if($message = $this->message){
+	echo $message;
+}else {
+?>
+	
+	<?php 
+	// BEGIN showing friends and following
+	foreach ($this->friends as $myFriend) {
+	
+		echo '<span class="zf-green">'.$this->escapeHtml($myFriend->getFirstName().' '.$myFriend->getLastName()). '</span>';
+		if(!in_array($myFriend->getId(), $friendsArray)){
+		?>
+		
+		<a href="<?php echo $this->url('add-member/default', array('controller' => 'group', 'action'=>'add-member', 'id' => $groupId, 'id2' => $myFriend->getId())); ?>" 
+		title="Add this person">[+]
+		</a> 
+		
+		<?php
+		}
+		echo ' | ';
+	}
+}
+?>
+
+
+<br /><br />
+<a href="<?php echo $this->url('groups'); ?>" class="btn btn-success"><?php echo $this->translate('Back to groups'); ?></a>

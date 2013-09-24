@@ -73,7 +73,14 @@ class GroupController extends AbstractActionController
         if($groups = $this->getEntityManager()->getRepository('CsnCms\Entity\Category')->findBy(array('user' => $user->getId()))){
         	
         }else{
-        	$message = $this->getTranslator()->translate('You don\'t have any gorups yet');
+        	$message = $this->getTranslator()->translate('You don\'t have any groups yet');
+        }
+        if(count($groups) == 1){
+        	foreach($groups as $group){
+        		if($group->getName() === 'No category'){
+        			$message = $this->getTranslator()->translate('You don\'t have any groups yet');
+        		}
+        	}
         }
 
         return new ViewModel(array('form' => $form, 'groups' => $groups, 'message' => $message));
@@ -143,21 +150,54 @@ class GroupController extends AbstractActionController
         $user = $this->identity();
         
 		if($group = $this->getEntityManager()->getRepository('CsnCms\Entity\Category')->findOneBy(array('id' => $id, 'user' => $user->getId()))) {
-			//Delete all comments first
-			/*if($comments = $this->getEntityManager()->getRepository('CsnCms\Entity\Comment')->findBy(array('article' => $id, ))){
-				foreach($comments as $comment){
-				  	$this->getEntityManager()->remove($comment);
+			//Delete all members of this group
+			if($members = $this->getEntityManager()->getRepository('CsnSocial\Entity\Group')->findBy(array('owner' => $user->getId(), 'category' => $id))){
+				foreach($members as $member){
+				  	$this->getEntityManager()->remove($member);
 		        	$this->getEntityManager()->flush();
 				  }
-			}*/
-			//Delete the article
+			}
+			
+			// Change category of all articles in this group to "No category"
+			if($articles = $this->getEntityManager()->getRepository('CsnCms\Entity\Article')->findBy(array('author' => $user->getId()))){
+				foreach($articles as $article){
+					if(count($article->getCategories()) == 1){
+						
+						foreach($article->getCategories() as $category){
+							
+						  	if($category->getId() == $id){
+						  		
+						  		$article->removeCategory($category);
+						  		
+						  		// Check if category with name "No category" exist
+						  		if($catExist = $this->getEntityManager()->getRepository('CsnCms\Entity\Category')->findOneBy(array('user' => $user->getId(), 'name' => 'No category'))) {
+						  			$article->addCategory($catExist);
+						  		}else {
+						  		
+						  			$cat = new \CsnCms\Entity\Category();
+							  		$cat->setUser($user);
+							  		$cat->setName('No category');
+							  		$this->getEntityManager()->persist($cat);
+							  		$this->getEntityManager()->flush();
+									$article->addCategory($cat);
+
+						  		}
+						  		
+								$this->getEntityManager()->persist($article);
+								$this->getEntityManager()->flush();
+						  	}
+						}
+					}
+				}
+			}
+			
+			//Delete the group
 			$this->getEntityManager()->remove($group);
 			$this->getEntityManager()->flush();	
 			return $this->redirect()->toRoute('groups');
 		}else {
 			return $this->redirect()->toRoute('groups');
 		}
-    	//return new ViewModel(array('form' => $form, 'groups' => $groups, 'message' => $message));
     }
     
     /**

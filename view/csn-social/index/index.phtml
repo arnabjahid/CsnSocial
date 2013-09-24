@@ -3,7 +3,7 @@
 		<span class="zf-green"><?php echo $this->escapeHtml($user->getFirstName().' '.$user->getLastName()); ?></span>
 	</a> Social Wall
 </h1>
-<a href="groups" class="btn btn-success" style="float:right; position: relative; margin-top: 20px;">
+<a href="<?php echo $this->url('groups'); ?>" class="btn btn-success" style="float:right; position: relative; margin-top: 20px;">
 	<?php echo $this->translate('Manage your groups'); ?>
 </a>
 <div style="clear: both"></div>
@@ -73,6 +73,8 @@ if (!isset($friendWithMe)) {
 <?php
 // BEGIN showing the form
 $form = $this->form;
+$form->get('followers')->setOptions(array('options' => $this->groupList));
+$form->get('followers')->setAttribute('size', 4);
 $form->prepare();
 
 echo $this->form()->openTag($form);
@@ -94,23 +96,70 @@ echo $this->form()->closeTag();
 ?>
 </div>
 <hr />
-<h4 style="text-align:center">Events: <span><a href="#" class="btn btn-success">All</a> <a href="#" class="btn btn-success">My</a> <a href="#" class="btn btn-success">Group1</a> <a href="#" class="btn btn-success">Group2</a> <a href="#" class="btn btn-success">Group3</a></span></h4>
+<h4 style="text-align:center">Events: <span>
+<?php foreach($this->navList as $cat) { 
+	if($cat === 'All') {
+	?>
+	<a href="<?php echo $this->url('social'); ?>" class="btn btn-success"><?php echo $cat; ?></a>
+	<?php
+	} else {
+?>
+<a href="<?php echo $this->url('social/default', array('controller' => 'index', 'action'=>'index', 'category' => $cat));?>" class="btn btn-success">
+	<?php echo $cat; ?>
+</a>
+<?php }} ?>
+</span></h4>
 <div class="jumbotron">
 
 <?php 
-// BEGIN showing the articles
+/* BEGIN showing the articles */
 foreach ($this->articles as $article) : ?>
 <?php
-//checking the name in every iteration whether current article display name exist in the array with friends. If not exist current article isn't showing
-	if(is_object($article->getAuthor()) &&
-	in_array($article->getAuthor()->getFirstName().' '.$article->getAuthor()->getLastName(), $myFriendsArray)){ 
+	/* --------- SOME VIEW LOGIC ------------------ */
+	$privateArticle = false;
+	$publicArticle = false;
+	$ownArticle = false;
+	
+	//BUG Many people can be same name!!!
+	//TODO,Every name should be replaced with ID!!!!!!
+	
+	// Check if this article is private and current user can see it
+	foreach($this->memberOf as $m){
+			if(is_object($article->getAuthor()) 
+			&& $article->getAuthor()->getId() == $m->getOwner()->getId() 
+			&& in_array($article->getAuthor()->getFirstName().' '.$article->getAuthor()->getLastName(), $myFriendsArray)){
+				$category[] = $m->getCategory()->getName();
+			}
+	}
+	
+	foreach($article->getCategories() as $articleCategory){
+		if(in_array($articleCategory->getName(), $category)){
+			$privateArticle = true;
+		}
+		
+	}
 
-/**
-*
-* NOTE: Here you can use jQuery Masonry plugin to arrange the boxes
-* http://masonry.desandro.com/
-*
-*/
+	// Check if this article is public and it's owner is friend of current user
+	if(count($article->getCategories())==0 && in_array($article->getAuthor()->getFirstName().' '.$article->getAuthor()->getLastName(), $myFriendsArray)){
+		$publicArticle = true;
+	}
+	
+	// Check if this article is property of current user
+	if($article->getAuthor()->getId() == $this->identity()->getId()){
+		$ownArticle = true;
+	}
+	
+	/* --------- SOME VIEW LOGIC ---------------END  */
+	
+	// Begin showing article
+	if($publicArticle || $privateArticle || $ownArticle){
+
+	/*
+	 *
+	 * NOTE: Here you can use jQuery Masonry plugin to arrange the boxes
+	 * http://masonry.desandro.com/
+	 *
+	 */
 ?>
 
 <div style="border: solid 0px #ADFF2F; box-shadow: 0px 0px 5px rgba(125, 213, 66, 1); border-radius: 0px;padding: 10px; width: 485px; height: auto; background: #fff; float: left; margin-left: 15px; margin-top: 15px; " onMouseOver="this.style.boxShadow='0px 0px 5px rgba(0, 80, 133, 1)'" onMouseOut="this.style.boxShadow='0px 0px 5px rgba(125, 213, 66, 1)'">
@@ -163,8 +212,6 @@ foreach ($this->articles as $article) : ?>
 </div>
 
 <?php } ?>
-<?php endforeach; 
-// END showing the articles
-?>
+<?php endforeach; /* END showing the articles */ ?>
 <div style="clear: both"></div>
 </div>

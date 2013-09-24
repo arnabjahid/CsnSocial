@@ -63,6 +63,34 @@ class IndexController extends AbstractActionController {
 		
 		$user = $this->identity();
 		
+		// Put all groups for current user into array. The array is used to show all groups when user add article
+		$groups = $this->getEntityManager()->getRepository('CsnCms\Entity\Category')->findBy(array('user' => $user->getId()));
+        $groupList[] = 'Public';
+        foreach($groups as $group){
+        	$groupList[] =  $group->getName();
+        }
+        
+        $navList = $groupList;
+        
+        $groupList = array_diff($groupList, array('No category'));
+		
+		array_unshift($navList, "All");
+		$navList[1] = 'My';
+		
+		// Remove from navList 'No category' if article with such category name doesn't exist
+		$noCategory_exist = false;
+		$articles = $this->getEntityManager()->getRepository('CsnCms\Entity\Article')->findBy(array('author' => $user->getId()));
+		foreach($articles as $article){
+			foreach($article->getCategories() as $cat){
+				if($cat->getName() === 'No category'){
+					$noCategory_exist = true; break;
+				}
+			}
+		}
+		if($noCategory_exist == false){
+			$navList = array_diff($navList, array('No category'));
+		}
+		
 		$article = new Article();
 		$form = new AddEventForm();
 		$request = $this->getRequest();
@@ -71,8 +99,8 @@ class IndexController extends AbstractActionController {
 					$form->setData($request->getPost());
                     if ($form->isValid()) {
                         $data = $form->getData();
-                        
-						$this->prepareData($article, $data, false);
+                        $this->prepareData($article, $data, $groupList, false);                       
+						
 						//echo '<pre>';
 						//print_r($article);
 						//echo '</pre>';
@@ -82,15 +110,32 @@ class IndexController extends AbstractActionController {
                    }
         }
         
-        $dqlArticles = "SELECT a, u, l, c FROM CsnCms\Entity\Article a LEFT JOIN a.author u LEFT JOIN a.language l LEFT JOIN a.categories c   ORDER BY a.created DESC"; 
-        $query = $this->getEntityManager()->createQuery($dqlArticles);
-        //$query->setMaxResults(30);
-        $articles = $query->getResult();
+        $category = $this->params()->fromRoute('category');
         
+        if(isset($category)){
+        	if($category === 'My'){
+        		$userId = $user->getId();
+        		$dqlArticles = "SELECT a FROM CsnCms\Entity\Article a WHERE a.author='$userId'  ORDER BY a.created DESC";
+        	}else{
+        		//TODO Make all public article of a given user to show in the category
+				$dqlArticles = "SELECT a, c FROM CsnCms\Entity\Article a LEFT JOIN a.categories c WHERE c.name='$category'  ORDER BY a.created DESC";
+			}
+		    $query = $this->getEntityManager()->createQuery($dqlArticles);
+		    //$query->setMaxResults(30);
+		    $articles = $query->getResult();
+		    
+        }else{
+        
+		    $dqlArticles = "SELECT a, u, l, c FROM CsnCms\Entity\Article a LEFT JOIN a.author u LEFT JOIN a.language l LEFT JOIN a.categories c   ORDER BY a.created DESC"; 
+		    $query = $this->getEntityManager()->createQuery($dqlArticles);
+		    //$query->setMaxResults(30);
+		    $articles = $query->getResult();
+		    
+        }
         $dqlMyFriends = "SELECT u, f FROM CsnUser\Entity\User u LEFT JOIN u.friendsWithMe f WHERE f.id = ".$user->getId(); 
 
         $query = $this->getEntityManager()->createQuery($dqlMyFriends);
-        $query->setMaxResults(30);
+        //$query->setMaxResults(30);
         $myFriends = $query->getResult();
         
         //print $query->getSQL();
@@ -98,12 +143,17 @@ class IndexController extends AbstractActionController {
         $dqlFriendsWithMe = "SELECT u, f FROM CsnUser\Entity\User u LEFT JOIN u.myFriends f WHERE f.id = ".$user->getId(); 
 
         $query = $this->getEntityManager()->createQuery($dqlFriendsWithMe);
-        $query->setMaxResults(30);
+        //$query->setMaxResults(30);
         $friendsWithMe = $query->getResult();
         
-        
+        //Get all groups in which current user is member of
+        $memberOf = $this->getEntityManager()->getRepository('CsnSocial\Entity\Group')->findBy(array('member' => $user->getId()));
+
+        foreach($memberOf as $m){
+			echo $m->getOwner()->getFirstName().' - '.$m->getCategory()->getName();
+		}
 		
-        return new ViewModel(array('user' => $user, 'form' => $form, 'articles' => $articles, 'myFriends' => $myFriends, 'friendsWithMe' => $friendsWithMe));
+        return new ViewModel(array('user' => $user, 'form' => $form, 'articles' => $articles, 'myFriends' => $myFriends, 'friendsWithMe' => $friendsWithMe, 'groupList' => $groupList, 'navList' => $navList, 'memberOf' => $memberOf));
     } 
     
     /**
@@ -297,8 +347,8 @@ class IndexController extends AbstractActionController {
      *
      * Prepare data to be inserted in database
      */
-	public function prepareData($article, $data, $update) {
-		
+	public function prepareData($article, $data, $groupList, $update) {
+		$user = $this->identity();
 		// prepare data for updating
     	if(!$update){
     		$article->setAuthor($this->identity());
@@ -310,7 +360,7 @@ class IndexController extends AbstractActionController {
 		$article->setVote($vote);
     	// prepare data for inserting
         $article->setFulltext($data['event']);
-        
+
         $article->setTitle($data['title']);
         
         $slug = $this->prepareSlug($data['title']);
@@ -318,6 +368,18 @@ class IndexController extends AbstractActionController {
         
         $introText = $this->prepareIntroText($data['event']);
         $article->setIntrotext($introText);
+        
+        //Add categories
+        foreach($data['followers'] as $follower){
+			// 0 is for Public. If public no need to set article category.
+			if($follower == 0) { break; }
+			$cat[] = $groupList[$follower];
+		}
+
+		foreach($cat as $c){
+			$category = $this->getEntityManager()->getRepository('CsnCms\Entity\Category')->findOneBy(array('user' => $user->getId(), 'name' => $c));
+			$article->addCategory($category);
+		}
     }
     
     /**

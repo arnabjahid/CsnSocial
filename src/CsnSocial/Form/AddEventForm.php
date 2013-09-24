@@ -35,10 +35,9 @@ class AddEventForm extends Form
         ));
         $this->add(array(
         	'name' => 'followers',
-            'type' => 'Zend\Form\Element\Select',
+            'type' => 'Zend\Form\Element\MultiCheckbox',
             'attributes' => array(
-                'multiple' => 'multiple',
-                
+
                 'options' => array(
 		                '0' => 'All',
 		                '1' => 'group1',

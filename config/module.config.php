@@ -28,7 +28,7 @@ return array(
 					'default' => array(
 						'type'    => 'Segment',
 						'options' => array(
-							'route'    => '/[...]',
+							'route'    => '[/:category]',
 							'defaults' => array(
 								'__NAMESPACE__' => 'CsnSocial\Controller',
 								'controller'    => 'Index',

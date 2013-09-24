@@ -21,7 +21,7 @@ class AddGroupFilter extends InputFilter
 					'options' => array(
 						'encoding' => 'UTF-8',
 						'min'      => 1,
-						'max'      => 100,
+						'max'      => 50,
 					),
 				),
 			), 

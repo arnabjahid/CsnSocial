@@ -149,9 +149,9 @@ class IndexController extends AbstractActionController {
         //Get all groups in which current user is member of
         $memberOf = $this->getEntityManager()->getRepository('CsnSocial\Entity\Group')->findBy(array('member' => $user->getId()));
 
-        foreach($memberOf as $m){
+        /*foreach($memberOf as $m){
 			echo $m->getOwner()->getFirstName().' - '.$m->getCategory()->getName();
-		}
+		}*/
 		
         return new ViewModel(array('user' => $user, 'form' => $form, 'articles' => $articles, 'myFriends' => $myFriends, 'friendsWithMe' => $friendsWithMe, 'groupList' => $groupList, 'navList' => $navList, 'memberOf' => $memberOf));
     } 

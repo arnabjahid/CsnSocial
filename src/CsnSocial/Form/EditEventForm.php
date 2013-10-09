@@ -33,23 +33,7 @@ class EditEventForm extends Form
                 'label' => ' ',
             ),
         ));
-        $this->add(array(
-        	'name' => 'followers',
-            'type' => 'Zend\Form\Element\Select',
-            'attributes' => array(
-                'multiple' => 'multiple',
-                
-                'options' => array(
-		                '0' => 'All',
-		                '1' => 'group1',
-		                '2' => 'group2',
-		                '3' => 'group3',
-				        ),
-		        ),
-            'options' => array(
-                'label' => ' ',
-            ),
-        )); 
+
         $this->add(array(
             'name' => 'submit',
             'attributes' => array(

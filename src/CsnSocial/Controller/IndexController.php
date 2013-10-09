@@ -241,7 +241,17 @@ class IndexController extends AbstractActionController {
 				if ($form->isValid()) {
 					$data = $form->getData();
 				                          
-					$this->prepareData($article, $data, true);
+					// prepare data for inserting
+					$article->setFulltext($data['event']);
+
+					$article->setTitle($data['title']);
+				
+					$slug = $this->prepareSlug($data['title']);
+					$article->setSlug($slug);
+				
+					$introText = $this->prepareIntroText($data['event']);
+					$article->setIntrotext($introText);
+					
 					$this->getEntityManager()->persist($article);
 					$this->getEntityManager()->flush();
 
